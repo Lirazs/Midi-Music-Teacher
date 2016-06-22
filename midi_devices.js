@@ -47,11 +47,9 @@ Midi.Devices.prototype.watch_input = function(input_port, on_status) {
             device.onstatechange = function(state_event) {
                on_status(state_event.port.id, state_event.port.state);
             };
-            return true;
          }
       });
    }
-   return false
 };
 
 Midi.Devices.prototype.unwatch_input = function(input_port) {
@@ -60,11 +58,9 @@ Midi.Devices.prototype.unwatch_input = function(input_port) {
       self._midi.inputs.forEach(function(device) {
          if (device.id === input_port) {
             device.onstatechange = null;
-            return true;
          }
       });
    }
-   return false
 };
 
 Midi.Devices.prototype.open_input = function(input_port, on_note) {
@@ -73,18 +69,15 @@ Midi.Devices.prototype.open_input = function(input_port, on_note) {
       self._midi.inputs.forEach(function(device) {
          if (device.id === input_port) {
             device.onmidimessage = function(midi_event) {
-               on_note({  time:     midi_event.timestamp,
-                          command:  midi_event.data[0] >> 4,
-                          channel:  midi_event.data[0] & 0xf,
-                          note:     midi_event.data[1],
-                          velocity: midi_event.data[2]
-                       });
+               on_note(device.id, { time:     midi_event.timeStamp,
+									command:  midi_event.data[0] >> 4,
+									channel:  midi_event.data[0] & 0xf,
+									note:     midi_event.data[1],
+									velocity: midi_event.data[2] });
             };
-            return true;
          }
       });
    }
-   return false
 };
 
 Midi.Devices.prototype.close_input = function(input_port) {
@@ -94,11 +87,9 @@ Midi.Devices.prototype.close_input = function(input_port) {
          if (device.id === input_port) {
             device.onmidimessage = null;
             device.close();
-            return true;
          }
       });
    }
-   return false
 };
 
 Midi.Devices.prototype._devices = function(devices) {
