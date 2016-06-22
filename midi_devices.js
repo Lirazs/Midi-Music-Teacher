@@ -70,10 +70,10 @@ Midi.Devices.prototype.open_input = function(input_port, on_note) {
          if (device.id === input_port) {
             device.onmidimessage = function(midi_event) {
                on_note(device.id, { time:     midi_event.timeStamp,
-									command:  midi_event.data[0] >> 4,
-									channel:  midi_event.data[0] & 0xf,
-									note:     midi_event.data[1],
-									velocity: midi_event.data[2] });
+                                    command:  midi_event.data[0] >> 4,
+                                    channel:  midi_event.data[0] & 0xf,
+                                    note:     midi_event.data[1],
+                                    velocity: midi_event.data[2] });
             };
          }
       });
