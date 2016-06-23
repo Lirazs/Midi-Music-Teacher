@@ -1,6 +1,6 @@
 (function(Widgets) {
 
-Widgets.set_progress = function(timer_id, caption, rotation) {
+Widgets.setProgress = function(timer_id, caption, rotation) {
    var timer = document.getElementById(timer_id);
    timer.querySelector('.caption').innerHTML = caption;
 
@@ -17,20 +17,20 @@ Widgets.set_progress = function(timer_id, caption, rotation) {
 
 
 
-Widgets.CountDown = function(seconds, step, on_zero, on_down) {
+Widgets.CountDown = function(seconds, step, onZero, onDown) {
    var self = this;
    self._seconds = seconds;
    self._step = step;
    self._timer = setInterval(function() {
       self._seconds = Math.max(self._seconds-self._step, 0);
-      if (on_down) {
-         on_down(self);
+      if (onDown) {
+         onDown(self);
       }
       if (self._seconds == 0) {
          self._seconds = 0;
          clearInterval(self._timer);
-         if (on_zero) {
-            on_zero(self);
+         if (onZero) {
+            onZero(self);
          }
       }
    }, step);

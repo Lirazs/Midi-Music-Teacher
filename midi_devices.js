@@ -1,6 +1,6 @@
 (function(Midi) {
 
-Midi.Devices = function(on_init) {
+Midi.Devices = function(onInit) {
    var self = this;
    self._midi = null;
    self._supported = null;
@@ -9,11 +9,11 @@ Midi.Devices = function(on_init) {
       navigator.requestMIDIAccess({sysex: false}).then(  function(midi) {
                                                             self._midi = midi;
                                                             self._supported = true;
-                                                            if (on_init) {on_init(true);}
+                                                            if (onInit) {onInit(true);}
                                                          },
                                                          function(msg) {
                                                             self._supported = false;
-                                                            if (on_init) {on_init(false, msg);}
+                                                            if (onInit) {onInit(false, msg);}
                                                          });
    }
 };
@@ -39,20 +39,20 @@ Midi.Devices.prototype.outputs = function() {
    return [];
 };
 
-Midi.Devices.prototype.watch_input = function(input_port, on_status) {
+Midi.Devices.prototype.watchInput = function(input_port, onStatus) {
    var self = this;
    if (self._midi) {
       self._midi.inputs.forEach(function(device) {
          if (device.id === input_port) {
             device.onstatechange = function(state_event) {
-               on_status(state_event.port.id, state_event.port.state);
+               onStatus(state_event.port.id, state_event.port.state);
             };
          }
       });
    }
 };
 
-Midi.Devices.prototype.unwatch_input = function(input_port) {
+Midi.Devices.prototype.unwatchInput = function(input_port) {
    var self = this;
    if (self._midi) {
       self._midi.inputs.forEach(function(device) {
@@ -63,13 +63,13 @@ Midi.Devices.prototype.unwatch_input = function(input_port) {
    }
 };
 
-Midi.Devices.prototype.open_input = function(input_port, on_note) {
+Midi.Devices.prototype.openInput = function(input_port, onNote) {
    var self = this;
    if (self._midi) {
       self._midi.inputs.forEach(function(device) {
          if (device.id === input_port) {
             device.onmidimessage = function(midi_event) {
-               on_note(device.id, { time:     midi_event.timeStamp,
+               onNote(device.id, { time:     midi_event.timeStamp,
                                     command:  midi_event.data[0] >> 4,
                                     channel:  midi_event.data[0] & 0xf,
                                     note:     midi_event.data[1],
@@ -80,7 +80,7 @@ Midi.Devices.prototype.open_input = function(input_port, on_note) {
    }
 };
 
-Midi.Devices.prototype.close_input = function(input_port) {
+Midi.Devices.prototype.closeInput = function(input_port) {
    var self = this;
    if (self._midi) {
       self._midi.inputs.forEach(function(device) {
