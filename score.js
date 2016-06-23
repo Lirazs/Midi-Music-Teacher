@@ -80,6 +80,9 @@ Score.Stave.prototype._makeBeat = function(notes, duration) {
       if (notes[i].accidental) {
          stave_note.addAccidental(i, new Vex.Flow.Accidental(notes[i].accidental));
       }
+      if (notes[i].color) {
+         stave_note.setKeyStyle(i, {strokeStyle: notes[i].color, fillStyle: notes[i].color});
+      }
    }
    return stave_note;
 };
