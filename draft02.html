@@ -1,0 +1,190 @@
+<html>
+
+<head>
+   <title>MIDI Draft 02</title>
+   <link rel="icon" href="data:;base64,iVBORw0KGgo="/>
+
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+
+   <link rel="stylesheet" type="text/css" href="draft02.css"/>
+
+   <script src="ui.js"></script>
+   <link rel="stylesheet" type="text/css" href="ui.css"/>
+
+   <script src="vexflow-min.js"></script>
+   <script src="score.js"></script>
+   <script src="midi_devices.js"></script>
+
+
+   <script src="octave.js"></script>
+   <link rel="stylesheet" type="text/css" href="octave.css"/>
+
+   <script>
+      function randomInt(min, max) {
+         return Math.floor(Math.random() * (max - min)) + min;
+      }
+
+      var my_timer = null;
+      var my_stave = null;
+      var target_note = null;
+      var points = 0;
+      var points_delta = 0;
+
+      var tone2ID = {0: 'A', 1: 'As', 2: 'B', 3: 'C', 4: 'Cs', 5: 'D', 6: 'Ds', 7: 'E', 8: 'F', 9: 'Fs', 10: 'G', 11: 'Gs'};
+      var tone2name = {0: ['A', ''], 1: ['A', '#'], 2: ['B', ''], 3: ['C', ''], 4: ['C', '#'],
+                       5: ['D', ''], 6: ['D', '#'], 7: ['E', ''], 8: ['F', ''], 9: ['F', '#'], 10: ['G', ''], 11: ['G', '#']};
+
+      var newTest = function() {
+         points_delta = +2;
+         target_note = randomInt(0, 12);
+         my_stave.drawBeat([{name: tone2name[target_note][0], accidental: tone2name[target_note][1], octave: 5}], 4, {text: tone2ID[target_note], position: 9});
+         my_timer = new Widgets.CountDown(5000, 50,
+               function() {
+                  points_delta = +1;
+                  markKey('myoct', tone2ID[target_note]);
+               },
+               function(t) {
+                  Widgets.setProgress('timer', t.remaining(), t.remaining()/5000);
+               }
+            );
+      };
+
+      var markKey = function(octave_name, key_id) {
+         document.getElementById(octave_name).querySelector('#'+key_id).classList.add('marked');
+      };
+
+      var unmarkKey = function(octave_name, key_id) {
+         document.getElementById(octave_name).querySelector('#'+key_id).classList.remove('marked');
+      };
+
+      var pressKey = function(octave_name, key_id) {
+         document.getElementById(octave_name).querySelector('#'+key_id).classList.add('pressed');
+      };
+
+      var releaseKey = function(octave_name, key_id) {
+         document.getElementById(octave_name).querySelector('#'+key_id).classList.remove('pressed');
+      };
+
+      var updateUserScore = function(new_score) {
+         points = new_score;
+         document.getElementById('user-points').querySelector('span').innerHTML = "Score: " + points.toString();
+      };
+
+
+
+      window.onload = function() {
+         my_stave = new Score.Stave("stave", "treble");
+         newTest();
+      }
+
+      var app = angular.module('draft', ['pianoWidget']);
+      
+      app.controller('draftCtrl', function($scope, $http) {
+      });
+
+
+      var midi = new Midi.Devices(function(flag, msg) {
+         if (!flag) {
+            alert('Midi is unsupported by the browser: ' + msg);
+            return;
+         }
+         
+         var devices_list = document.getElementById('devices-list');
+         var inputs = midi.inputs();
+         for (var i = 0; i < inputs.length; ++i) {
+            var ID = 'midi_input_' + i.toString();
+            var led_type = (inputs[i].state == 'connected')? 'green' : 'red';
+            var title = inputs[i].name + ' (' + inputs[i].version + ')';
+            devices_list.innerHTML += "<li><div id="+ID+" class='led "+led_type+"'></div><span class='device-name'>"+title+"</span></li>";
+            midi.watchInput(inputs[i].port, function(port, state) {
+               if (state == 'connected') {
+                  devices_list.querySelector('#'+ID).classList.remove('red');
+                  devices_list.querySelector('#'+ID).classList.add('green');
+               } else {
+                  devices_list.querySelector('#'+ID).classList.remove('green');
+                  devices_list.querySelector('#'+ID).classList.add('red');
+               }
+            });
+            midi.openInput(inputs[i].port, function(port, midi_event) {
+
+               if (midi_event.command == 0x09) { // Note On
+                  var octave_number = Math.floor((midi_event.note - 21-3)/12);
+                  var half_tones = Math.floor((midi_event.note - 21)%12);
+                  if ((midi_event.velocity < 2) || (midi_event.velocity == 64))  {
+                     releaseKey('myoct', tone2ID[half_tones]);
+                  } else {
+                     pressKey('myoct', tone2ID[half_tones]);
+                     if (half_tones == target_note) {
+                        my_timer.abort();
+                        markKey('myoct', tone2ID[target_note]);
+                        updateUserScore(points+points_delta);
+                        setTimeout(function() { 
+                           unmarkKey('myoct', tone2ID[target_note]);
+                           newTest();
+                        }, 1000);
+                     } else {
+                        updateUserScore(points-1);
+                        var sequence = [{ notes: [{name: tone2name[target_note][0], accidental: tone2name[target_note][1], octave: 5}],
+                                          duration: 4,
+                                          annotation: {text: tone2ID[target_note], position: 9}
+                                        },
+                                        { notes: [{name: tone2name[half_tones][0], accidental: tone2name[half_tones][1], octave: 5, color: "yellow"}],
+                                          duration: 4,
+                                          annotation: {text: tone2ID[half_tones], position: 9}}
+                                       ];
+                        my_stave.drawSequence(sequence);
+                     }
+                  }
+               } else if (midi_event.command == 0x08) { // Note Off
+                  var octave_number = Math.floor((midi_event.note - 21)/12);
+                  var half_tones = Math.floor((midi_event.note - 21)%12);
+                  releaseKey('myoct', tone2ID[half_tones]);
+               } else {
+                  alert(midi_event.command);
+               }
+            });
+         }
+      });
+
+
+   </script>
+
+
+
+   <style>
+      #myoct {
+         background-color: black;
+      }
+   </style>
+
+</head>
+
+<body data-ng-app='draft'> 
+   <div data-ng-controller='draftCtrl'>
+      <div id="user-points">
+         <span>Score: 0</span>
+      </div>
+
+      <canvas id='stave' width='150' height='150'></canvas>
+
+      <div id='timerdiv'>
+         <div id='timer' class="progress">
+            <div class="caption"></div>
+            <div class="boundary">
+               <div class="halfcirc"></div>
+               <div class="halfcirc second"></div>
+            </div>
+         </div>
+      </div>
+
+      <div id='keyboard'>
+         <octave id='myoct'></octave>
+      </div>
+
+      <div id='midi-devices'>
+         <ul id='devices-list' class='devices'></ul>
+      </div>
+   </div>
+</body>
+
+</html>
