@@ -6,6 +6,7 @@
 Score.Stave = function(canvasId, clef_name, time_signature) {
    var self = this;
 
+   self._clef_name = clef_name;
    self._canvas = document.getElementById(canvasId);
    self._renderer = new Vex.Flow.Renderer(self._canvas, Vex.Flow.Renderer.Backends.CANVAS);
    self._ctx = self._renderer.getContext();
@@ -64,7 +65,7 @@ Score.Stave.prototype._makeBeat = function(notes, duration) {
       keys.push(note_info.name+"/"+(note_info.octave || '4'));
    });
    
-   var note = new Vex.Flow.StaveNote({ keys: keys, duration: duration.toString() });
+   var note = new Vex.Flow.StaveNote({ keys: keys, duration: duration.toString(), clef: self._clef_name, auto_stem: true });
 
    for (var i = 0; i < notes.length; ++i) {
       if (notes[i].accidental) {
