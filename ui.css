@@ -1,0 +1,48 @@
+.progress {
+   position: relative;
+   font-size: 200px;
+   width: 1em;
+   height: 1em;
+   float: left;
+}
+
+.progress > .caption {
+   position: absolute;
+   top: 1.05em;
+   left: 0;
+   width: 3.33em;
+   font-size: 0.3em;
+   text-align: center;
+}
+
+.progress > .boundary {
+   position: absolute;
+   width: 1em;
+   height: 1em;
+   clip: rect(0px,1em,1em,0.5em);
+}
+
+.progress > .boundary.postmiddle {
+   clip: rect(auto, auto, auto, auto);
+}
+
+.progress > .boundary > .halfcirc {
+   border: 0.1em solid #c0c0c0;
+   position: absolute;
+   width: 0.8em; /* 1 - (2 * border width) */
+   height: 0.8em; /* 1 - (2 * border width) */
+   clip: rect(0em,0.5em,1em,0em);
+   -moz-border-radius: 0.5em;
+   -webkit-border-radius: 0.5em; 
+   border-radius: 0.5em;
+}
+
+
+.progress > .boundary > .halfcirc.second {
+   -moz-transform: rotate(180deg);
+   -webkit-transform: rotate(180deg);
+   -o-transform: rotate(180deg);
+   transform: rotate(180deg);
+   visibility: hidden;
+}
+
