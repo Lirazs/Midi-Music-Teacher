@@ -1,10 +1,10 @@
 # HTTP Server for tests.
 
 import os
+import sys
 import BaseHTTPServer
 import SocketServer
 import urlparse
-
 
 class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     homedir = ''
@@ -46,7 +46,8 @@ class MyServer(object):
 
 
 def main():
-    root, port = os.getcwd(), 8123
+    root = os.getcwd()
+    port = 8123 if len(sys.argv) == 1 else int(sys.argv[1])
     server = MyServer(root, port)
     print 'running....'
     print '\t Root: ', root
