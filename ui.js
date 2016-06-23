@@ -38,6 +38,7 @@ Widgets.CountDown = function(seconds, step, onZero, onDown) {
 
 Widgets.CountDown.prototype.abort = function() {
    var self = this;
+   self._seconds = 0;
    clearInterval(self._timer);
 };
 

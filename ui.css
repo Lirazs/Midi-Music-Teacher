@@ -1,9 +1,5 @@
 .progress {
    position: relative;
-   font-size: 200px;
-   width: 1em;
-   height: 1em;
-   float: left;
 }
 
 .progress > .caption {
