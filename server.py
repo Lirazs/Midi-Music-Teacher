@@ -16,10 +16,6 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/'+content_type)
         self.end_headers()
 
-        self.send_header('Content-type', 'text/html')
-        self.send_header('Content-type', 'text/css')
-        self.send_header('Content-type', 'text/javascript')
-
     def do_HEAD(self):
         self._set_headers('html')
 
