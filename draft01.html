@@ -16,46 +16,42 @@
    <script src="midi_devices.js"></script>
 
 
-   <script src="octave.js"></script>
-   <link rel="stylesheet" type="text/css" href="octave.css"/>
+   <script src="keyboard.js"></script>
+   <link rel="stylesheet" type="text/css" href="keyboard.css"/>
 
    <script>
       var my_stave = null;
+      var my_octave = null;
       var sequence = [];
 
       window.onload = function() {
+         my_octave = new Keyboard.Octave('myoct');
          my_stave = new Score.Stave("stave", "treble");
 
-         var octave = 5;
-         sequence = [{notes: [{name: 'a', octave: octave-1}], duration: 4, annotation: {text: 'A', position: 9}},
-                     {notes: [{name: 'a', octave: octave-1, accidental: '#'}], duration: 4, annotation: {text: 'A#', position: 9}},
-                     {notes: [{name: 'b', octave: octave-1}], duration: 4, annotation: {text: 'B', position: 9}},
-                     {notes: [{name: 'c', octave: octave}], duration: 4, annotation: {text: 'C', position: 9}},
-                     {notes: [{name: 'c', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'C#', position: 9}},
-                     {notes: [{name: 'd', octave: octave}], duration: 4, annotation: {text: 'D', position: 9}},
-                     {notes: [{name: 'd', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'D#', position: 9}},
-                     {notes: [{name: 'e', octave: octave}], duration: 4, annotation: {text: 'E', position: 9}},
-                     {notes: [{name: 'f', octave: octave}], duration: 4, annotation: {text: 'F', position: 9}},
-                     {notes: [{name: 'f', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'F#', position: 9}},
-                     {notes: [{name: 'g', octave: octave}], duration: 4, annotation: {text: 'G', position: 9}},
-                     {notes: [{name: 'g', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'G#', position: 9}}];
+         var text_position = 10;
+         var octave = 4;
+         sequence = [
+                     {notes: [{name: 'c', octave: octave}], duration: 4, annotation: {text: 'C', position: text_position}},
+                     {notes: [{name: 'c', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'C#', position: text_position}},
+                     {notes: [{name: 'd', octave: octave}], duration: 4, annotation: {text: 'D', position: text_position}},
+                     {notes: [{name: 'd', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'D#', position: text_position}},
+                     {notes: [{name: 'e', octave: octave}], duration: 4, annotation: {text: 'E', position: text_position}},
+                     {notes: [{name: 'f', octave: octave}], duration: 4, annotation: {text: 'F', position: text_position}},
+                     {notes: [{name: 'f', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'F#', position: text_position}},
+                     {notes: [{name: 'g', octave: octave}], duration: 4, annotation: {text: 'G', position: text_position}},
+                     {notes: [{name: 'g', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'G#', position: text_position}},
+                     {notes: [{name: 'a', octave: octave}], duration: 4, annotation: {text: 'A', position: text_position}},
+                     {notes: [{name: 'a', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'A#', position: text_position}},
+                     {notes: [{name: 'b', octave: octave}], duration: 4, annotation: {text: 'B', position: text_position}},
+                  ];
          my_stave.drawSequence(sequence);
       }
 
-      var app = angular.module('draft', ['pianoWidget']);
+      var app = angular.module('draft', ['keyboard']);
       
       app.controller('draftCtrl', function($scope, $http) {
       });
 
-
-      var pressKey = function(octave_name, key_id) {
-         document.getElementById(octave_name).querySelector('#'+key_id).classList.add('pressed');
-      };
-
-      var releaseKey = function(octave_name, key_id) {
-         document.getElementById(octave_name).querySelector('#'+key_id).classList.remove('pressed');
-//         my_stave.clear();
-      };
 
 
       var midi = new Midi.Devices(function(flag, msg) {
@@ -64,10 +60,8 @@
             return;
          }
          
-         var tone2ID = {0: 'A', 1: 'As', 2: 'B', 3: 'C', 4: 'Cs', 5: 'D', 6: 'Ds', 7: 'E', 8: 'F', 9: 'Fs', 10: 'G', 11: 'Gs'};
-         var tone2name = {0: ['A', ''], 1: ['A', '#'], 2: ['B', ''], 3: ['C', ''], 4: ['C', '#'],
-                          5: ['D', ''], 6: ['D', '#'], 7: ['E', ''], 8: ['F', ''], 9: ['F', '#'], 10: ['G', ''], 11: ['G', '#']};
-
+         var tone2name = {0: ['C', ''], 1: ['C', '#'], 2: ['D', ''], 3: ['D', '#'], 4: ['E', ''], 5: ['F', ''],
+                          6: ['F', '#'], 7: ['G', ''], 8: ['G', '#'], 9: ['A', ''], 10: ['A', '#'], 11: ['B', '']};
 
          var devices_list = document.getElementById('devices-list');
          var inputs = midi.inputs();
@@ -88,21 +82,21 @@
             midi.openInput(inputs[i].port, function(port, midi_event) {
 
                if (midi_event.command == 0x09) { // Note On
-                  var octave_number = Math.floor((midi_event.note - 21-3)/12);
-                  var half_tones = Math.floor((midi_event.note - 21)%12);
+                  var octave_number = Math.floor((midi_event.note-12)/12);
+                  var note_index = (midi_event.note-12)%12;
                   if ((midi_event.velocity < 2) || (midi_event.velocity == 64))  {
-                     releaseKey('myoct', tone2ID[half_tones]);
-                     sequence[half_tones].notes[0].color = '';
+                     my_octave.releaseKey(note_index);
+                     sequence[note_index].notes[0].color = '';
                   } else {
-                     pressKey('myoct', tone2ID[half_tones]);
-                     sequence[half_tones].notes[0].color = 'blue';
+                     my_octave.pressKey(note_index);
+                     sequence[note_index].notes[0].color = 'blue';
 //                     my_stave.drawBeat([{name: tone2name[half_tones][0], accidental: tone2name[half_tones][1], octave: octave_number}], 4);
                   }
                } else if (midi_event.command == 0x08) { // Note Off
-                  var octave_number = Math.floor((midi_event.note - 21)/12);
-                  var half_tones = Math.floor((midi_event.note - 21)%12);
-                  releaseKey('myoct', tone2ID[half_tones]);
-                  sequence[half_tones].notes[0].color = '';
+                  var octave_number = Math.floor((midi_event.note-12)/12);
+                  var note_index = (midi_event.note-12)%12;
+                  my_octave.releaseKey(note_index);
+                  sequence[note_index].notes[0].color = '';
                } else {
                   alert(midi_event.command);
                }
@@ -126,7 +120,7 @@
 
 <body data-ng-app='draft'> 
    <div data-ng-controller='draftCtrl'>
-      <div><canvas id='stave' width='700' height='100'><canvas></div>
+      <div><canvas id='stave' width='700' height='115'><canvas></div>
 
       <div id='keyboard'>
          <octave id='myoct'></octave>

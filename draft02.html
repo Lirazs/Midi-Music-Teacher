@@ -16,8 +16,8 @@
    <script src="midi_devices.js"></script>
 
 
-   <script src="octave.js"></script>
-   <link rel="stylesheet" type="text/css" href="octave.css"/>
+   <script src="keyboard.js"></script>
+   <link rel="stylesheet" type="text/css" href="keyboard.css"/>
 
    <script>
       function randomInt(min, max) {
@@ -26,43 +26,31 @@
 
       var my_timer = null;
       var my_stave = null;
+      var my_octave = null;
       var target_note = null;
       var points = 0;
       var points_delta = 0;
 
-      var tone2ID = {0: 'A', 1: 'As', 2: 'B', 3: 'C', 4: 'Cs', 5: 'D', 6: 'Ds', 7: 'E', 8: 'F', 9: 'Fs', 10: 'G', 11: 'Gs'};
-      var tone2name = {0: ['A', ''], 1: ['A', '#'], 2: ['B', ''], 3: ['C', ''], 4: ['C', '#'],
-                       5: ['D', ''], 6: ['D', '#'], 7: ['E', ''], 8: ['F', ''], 9: ['F', '#'], 10: ['G', ''], 11: ['G', '#']};
+
+      var tone2name = {0: ['C', ''], 1: ['C', '#'], 2: ['D', ''], 3: ['D', '#'], 4: ['E', ''], 5: ['F', ''],
+                       6: ['F', '#'], 7: ['G', ''], 8: ['G', '#'], 9: ['A', ''], 10: ['A', '#'], 11: ['B', '']};
+
 
       var newTest = function() {
          points_delta = +2;
          target_note = randomInt(0, 12);
-         my_stave.drawBeat([{name: tone2name[target_note][0], accidental: tone2name[target_note][1], octave: 5}], 4, {text: tone2ID[target_note], position: 9});
+         console.log(target_note, tone2name[target_note]);
+         my_stave.drawBeat([{name: tone2name[target_note][0], accidental: tone2name[target_note][1], octave: 4}], 4,
+                            {text: tone2name[target_note][0]+tone2name[target_note][1], position: 10});
          my_timer = new Widgets.CountDown(5000, 50,
                function() {
                   points_delta = +1;
-                  markKey('myoct', tone2ID[target_note]);
+                  my_octave.markKey(target_note);
                },
                function(t) {
                   Widgets.setProgress('timer', t.remaining(), t.remaining()/5000);
                }
             );
-      };
-
-      var markKey = function(octave_name, key_id) {
-         document.getElementById(octave_name).querySelector('#'+key_id).classList.add('marked');
-      };
-
-      var unmarkKey = function(octave_name, key_id) {
-         document.getElementById(octave_name).querySelector('#'+key_id).classList.remove('marked');
-      };
-
-      var pressKey = function(octave_name, key_id) {
-         document.getElementById(octave_name).querySelector('#'+key_id).classList.add('pressed');
-      };
-
-      var releaseKey = function(octave_name, key_id) {
-         document.getElementById(octave_name).querySelector('#'+key_id).classList.remove('pressed');
       };
 
       var updateUserScore = function(new_score) {
@@ -74,10 +62,11 @@
 
       window.onload = function() {
          my_stave = new Score.Stave("stave", "treble");
+         my_octave = new Keyboard.Octave('myoct');
          newTest();
       }
 
-      var app = angular.module('draft', ['pianoWidget']);
+      var app = angular.module('draft', ['keyboard']);
       
       app.controller('draftCtrl', function($scope, $http) {
       });
@@ -108,37 +97,37 @@
             midi.openInput(inputs[i].port, function(port, midi_event) {
 
                if (midi_event.command == 0x09) { // Note On
-                  var octave_number = Math.floor((midi_event.note - 21-3)/12);
-                  var half_tones = Math.floor((midi_event.note - 21)%12);
+                  var octave_number = Math.floor((midi_event.note-12)/12);
+                  var note_index = (midi_event.note-12)%12;
                   if ((midi_event.velocity < 2) || (midi_event.velocity == 64))  {
-                     releaseKey('myoct', tone2ID[half_tones]);
+                     my_octave.releaseKey(note_index);
                   } else {
-                     pressKey('myoct', tone2ID[half_tones]);
-                     if (half_tones == target_note) {
+                     my_octave.pressKey(note_index);
+                     if (note_index == target_note) {
                         my_timer.abort();
-                        markKey('myoct', tone2ID[target_note]);
+                        my_octave.markKey(note_index);
                         updateUserScore(points+points_delta);
                         setTimeout(function() { 
-                           unmarkKey('myoct', tone2ID[target_note]);
+                           my_octave.unmarkKey(note_index);
                            newTest();
                         }, 1000);
                      } else {
                         updateUserScore(points-1);
-                        var sequence = [{ notes: [{name: tone2name[target_note][0], accidental: tone2name[target_note][1], octave: 5}],
+                        var sequence = [{ notes: [{name: tone2name[target_note][0], accidental: tone2name[target_note][1], octave: 4}],
                                           duration: 4,
-                                          annotation: {text: tone2ID[target_note], position: 9}
+                                          annotation: {text: tone2name[target_note][0]+tone2name[target_note][1], position: 10}
                                         },
-                                        { notes: [{name: tone2name[half_tones][0], accidental: tone2name[half_tones][1], octave: 5, color: "yellow"}],
+                                        { notes: [{name: tone2name[note_index][0], accidental: tone2name[note_index][1], octave: 4, color: "yellow"}],
                                           duration: 4,
-                                          annotation: {text: tone2ID[half_tones], position: 9}}
+                                          annotation: {text: tone2name[note_index][0]+tone2name[note_index][1], position: 10}}
                                        ];
                         my_stave.drawSequence(sequence);
                      }
                   }
                } else if (midi_event.command == 0x08) { // Note Off
-                  var octave_number = Math.floor((midi_event.note - 21)/12);
-                  var half_tones = Math.floor((midi_event.note - 21)%12);
-                  releaseKey('myoct', tone2ID[half_tones]);
+                  var octave_number = Math.floor((midi_event.note-12)/12);
+                  var note_index = (midi_event.note-12)%12;
+                  my_octave.releaseKey(note_index);
                } else {
                   alert(midi_event.command);
                }
@@ -152,7 +141,7 @@
 
 
    <style>
-      #myoct {
+     #myoct {
          background-color: black;
       }
    </style>
