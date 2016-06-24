@@ -37,6 +37,16 @@ angular.module('keyboard', [])
       self._element.querySelector('.'+self._index2ID[key_index]).classList.remove('pressed');
    };
 
+   Keyboard.Octave.prototype.annotation = function(flag) {
+      var self = this;
+      var mode = flag? 'visible':'hidden';
+      for (var key_index in self._index2ID) {
+         if (self._index2ID.hasOwnProperty(key_index)) {
+            self._element.querySelector('.'+self._index2ID[key_index]).querySelector('.keyname').style.visibility = mode;
+         }
+      }
+   };
+
 
 
    Keyboard.Range = function(element, octaves, $compile, $scope) {

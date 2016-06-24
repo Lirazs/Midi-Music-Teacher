@@ -7,6 +7,7 @@
    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
 
    <script src="midi_devices.js"></script>
+   <script src="quizzer.js"></script>
 
    <script src="ui.js"></script>
    <link rel="stylesheet" type="text/css" href="ui.css"/>
@@ -37,63 +38,6 @@
          }    
       };
 
-      var notes = {0: ['C', ''], 1: ['C', '#'], 2: ['D', ''], 3: ['D', '#'], 4: ['E', ''], 5: ['F', ''],
-                   6: ['F', '#'], 7: ['G', ''], 8: ['G', '#'], 9: ['A', ''], 10: ['A', '#'], 11: ['B', '']};
-
-
-
-      function randomInt(min, max) {
-         return Math.floor(Math.random() * (max - min)) + min;
-      }
-
-
-
-      function NotesGame(question_id, score_id, timer_id) {
-         var self = this;
-         self._timer = null;
-         self._timer_id = timer_id;
-         self._score_element = document.getElementById(score_id);
-         self._note_element = document.getElementById(question_id);
-         self._points = 0;
-         self._correct_score = 0;
-         self._mistake_score = 0;
-         self._target_note = null;
-      };
-
-      NotesGame.prototype.quizz = function(correct_score, mistake_score, timeout_score, onTimeout) {
-         var self = this;
-         self._correct_score = correct_score;
-         self._mistake_score = mistake_score;
-         self._target_note = randomInt(0,12);
-         self._note_element.querySelector('span').innerHTML = notes[self._target_note][0]+notes[self._target_note][1];
-
-         self._timer = new Widgets.CountDown(5000, 50,
-            function() {
-               self._points += timeout_score;
-               self._score_element.querySelector('span').innerHTML = "Score: " + self._points.toString();
-               onTimeout(self);
-            },
-            function(t) {
-               Widgets.setProgress(self._timer_id, t.remaining(), t.remaining()/5000);
-            }
-         );
-      };
-
-      NotesGame.prototype.trial = function(note) {
-         var self = this;
-         if (self._target_note == note) {
-            self._timer.abort();
-            self._points += self._correct_score;
-            self._score_element.querySelector('span').innerHTML = "Score: " + self._points.toString();
-            return true;
-         } else {
-            self._points += self._mistake_score;
-            self._score_element.querySelector('span').innerHTML = "Score: " + self._points.toString();
-            return false;
-         }
-      };
-// Optional Octaves
-// New Round: Show "YEY" and wait for 1 sec.
 
 
       var app = angular.module('draft', ['keyboard']);
@@ -103,14 +47,14 @@
          $scope.octave = null;
 
          $scope.newRound = function() {
-            $scope.game.quizz(+3, -1, -2, function() {            
-//               alert('timeout!');
+            $scope.game.quizz(4000, +3, -1, -2, function() {
+               $scope.octave.annotation(true);
             });
          };
 
          $scope.init = function() {
             $scope.octave = new Keyboard.Octave(document.getElementById('octave'));
-            $scope.game = new NotesGame('asked-note-name', 'user-points', 'timer');
+            $scope.game = new Quizzer.NotesGame('asked-note-name', 'user-points', 'timer');
 
             $scope.midi = new Midi.Controller(
                function(ok_flag, devices, msg) {
@@ -119,12 +63,14 @@
                      return;
                   }
                   initDeviceList(devices, document.getElementById('devices-list'));
+                  $scope.octave.annotation(false);
                   $scope.newRound();
                },
                function(octave, note_index) {
                   $scope.octave.pressKey(note_index);
                   if ($scope.game.trial(note_index)) {
                      setTimeout(function() { 
+                        $scope.octave.annotation(false);
                         $scope.newRound();
                      }, 1000);
                   }
