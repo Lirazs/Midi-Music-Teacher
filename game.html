@@ -29,32 +29,11 @@
       var app = angular.module('game', ['keyboard']);
       app.controller('gameCtrl', function($scope, $http, $compile) {});
 
-   
-      function init() {
-         var stave = new Score.Stave("stave", "treble");
-         var octave = new Keyboard.Octave(document.getElementById('octave'));
-         var quizzer = new Quizzer.NotesGame('user-points', 'timer', 'asked-note-name', stave);
 
-         var game = new Game.Chapter1(quizzer, octave, 2000, []);
-
-         var midi = new Midi.Controller(
-            function(ok_flag, devices, msg) {
-               if (!ok_flag) {
-                  alert('Midi is unsupported by the browser: ' + msg);
-                  return;
-               }
-               Common.initDeviceList(devices, document.getElementById('devices-list'));
-               game.newRound();
-            },
-            function(octave, note_index) {
-               game.onPress(octave, note_index);
-            },
-            function(octave, note_index) {
-               game.onRelease(octave, note_index);
-            }
-         );
+      var init = function() {
+         Game.initStage1();
       };
-
+   
       window.onload = function() {
       };
 
@@ -70,7 +49,7 @@
 
       <div class='question-box' id='asked-note-name'><span></span></div>
       <div class='question-box' id='asked-note-symbol'>
-         <!--span>?</span-->
+         <span>?</span>
          <canvas id='stave' width='150' height='150'></canvas>
       </div>
 
