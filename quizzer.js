@@ -23,6 +23,12 @@ Quizzer.NotesGame = function(score_id, timer_id, keyname_id, stave) {
    self._mistake_score = 0;
    self._target_note = null;
    self._target_accidental = '';
+   self._allowed_keys = null;
+};
+
+Quizzer.NotesGame.prototype.restrictKeys = function(allowed_keys) {
+   var self = this;
+   self._allowed_keys = allowed_keys;
 };
 
 Quizzer.NotesGame.prototype.quizz = function(millisecs, correct_score, mistake_score, timeout_score, onTimeout) {
@@ -30,7 +36,11 @@ Quizzer.NotesGame.prototype.quizz = function(millisecs, correct_score, mistake_s
    self._correct_score = correct_score;
    self._mistake_score = mistake_score;
 
-   self._target_note = Quizzer.randomInt(0,12);
+   if (self._allowed_keys == null) {
+      self._target_note = Quizzer.randomInt(0,12);
+   } else {
+      self._target_note = self._allowed_keys[Quizzer.randomInt(0,self._allowed_keys.length)];
+   }
    self._target_accidental = Quizzer.notes[self._target_note][1];
    if (self._target_accidental != '') {
       self._target_accidental = (Quizzer.randomInt(0, 2) == 0)?'#':'b';
