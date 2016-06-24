@@ -40,7 +40,7 @@
          };
 
          $scope.init = function() {
-            var stave = new Score.Stave("stave", "treble");
+            var stave = new Score.Stave("asked-note-symbol", "treble");
 
             $scope.octave = new Keyboard.Octave(document.getElementById('octave'));
             $scope.game = new Quizzer.NotesGame('user-points', 'timer', 'asked-note-name', stave);
@@ -83,6 +83,7 @@
       </div>
 
       <div class='question-box' id='asked-note-name'><span>F#</span></div>
+      <canvas class='question-box' id='asked-note-symbol' width='150' height='150'></canvas>
 
       <div id='timer-container'>
          <div id='timer' class="progress">
@@ -97,8 +98,6 @@
       <div id='keyboard'>
          <octave id='octave'></octave>
       </div>
-
-      <canvas class='question-box' id='stave' width='150' height='150'></canvas>
 
       <div id='midi-devices'>
          <ul id='devices-list' class='devices'></ul>

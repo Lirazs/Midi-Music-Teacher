@@ -64,7 +64,7 @@
 
 
       window.onload = function() {
-         my_stave = new Score.Stave("stave", "treble");
+         my_stave = new Score.Stave("asked-note-symbol", "treble");
          my_octave = new Keyboard.Octave(document.getElementById('myoct'));
          newTest();
       }
@@ -131,7 +131,7 @@
          <span>Score: 0</span>
       </div>
 
-      <canvas class='question-box' id='stave' width='150' height='150'></canvas>
+      <canvas class='question-box' id='asked-note-symbol' width='150' height='150'></canvas>
 
       <div id='timer-container'>
          <div id='timer' class="progress">

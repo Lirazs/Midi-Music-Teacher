@@ -22,13 +22,21 @@ Quizzer.NotesGame = function(score_id, timer_id, keyname_id, stave) {
    self._correct_score = 0;
    self._mistake_score = 0;
    self._target_note = null;
+   self._target_accidental = '';
 };
 
 Quizzer.NotesGame.prototype.quizz = function(millisecs, correct_score, mistake_score, timeout_score, onTimeout) {
    var self = this;
    self._correct_score = correct_score;
    self._mistake_score = mistake_score;
+
    self._target_note = Quizzer.randomInt(0,12);
+   self._target_accidental = Quizzer.notes[self._target_note][1];
+   if (self._target_accidental != '') {
+      self._target_accidental = (Quizzer.randomInt(0, 2) == 0)?'#':'b';
+   }
+
+
    self._show_keyname(self._target_note);
    self._show_note(self._target_note);
 
@@ -67,7 +75,7 @@ Quizzer.NotesGame.prototype._set_score = function(score) {
 Quizzer.NotesGame.prototype._show_keyname = function(key_index) {
    var self = this;
    if (self._note_element) {
-      self._note_element.querySelector('span').innerHTML = Quizzer.notes[key_index][0]+Quizzer.notes[key_index][1];
+      self._note_element.querySelector('span').innerHTML = Quizzer.notes[key_index][0]+self._target_accidental;
    }
 };
 
@@ -75,7 +83,7 @@ Quizzer.NotesGame.prototype._show_keyname = function(key_index) {
 Quizzer.NotesGame.prototype._show_note= function(key_index) {
    var self = this;
    if (self._stave) {
-      self._stave.drawBeat([{name: Quizzer.notes[key_index][0], accidental: Quizzer.notes[key_index][1], octave: 4}], 4);
+      self._stave.drawBeat([{name: Quizzer.notes[key_index][0], accidental: self._target_accidental, octave: 4}], 4);
    }
  
 };
