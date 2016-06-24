@@ -6,6 +6,10 @@
 
    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
 
+
+   <script src="common.js"></script>
+   <link rel="stylesheet" type="text/css" href="common.css"/>
+
    <link rel="stylesheet" type="text/css" href="draft02.css"/>
 
    <script src="ui.js"></script>
@@ -77,24 +81,7 @@
                alert('Midi is unsupported by the browser: ' + msg);
                return;
             }
-            
-            var devices_list = document.getElementById('devices-list');
-            var inputs = devices.inputs();
-            for (var i = 0; i < inputs.length; ++i) {
-               var ID = 'midi_input_' + i.toString();
-               var led_type = (inputs[i].state == 'connected')? 'green' : 'red';
-               var title = inputs[i].name + ' (' + inputs[i].version + ')';
-               devices_list.innerHTML += "<li><div id="+ID+" class='led "+led_type+"'></div><span class='device-name'>"+title+"</span></li>";
-               devices.watchInput(inputs[i].port, function(port, state) {
-                  if (state == 'connected') {
-                     devices_list.querySelector('#'+ID).classList.remove('red');
-                     devices_list.querySelector('#'+ID).classList.add('green');
-                  } else {
-                     devices_list.querySelector('#'+ID).classList.remove('green');
-                     devices_list.querySelector('#'+ID).classList.add('red');
-                  }
-               });
-            }
+            Common.initDeviceList(devices, document.getElementById('devices-list'));
          },
          function(octave, note_index) {
             my_octave.pressKey(note_index);
@@ -144,9 +131,9 @@
          <span>Score: 0</span>
       </div>
 
-      <canvas id='stave' width='150' height='150'></canvas>
+      <canvas class='question-box' id='stave' width='150' height='150'></canvas>
 
-      <div id='timerdiv'>
+      <div id='timer-container'>
          <div id='timer' class="progress">
             <div class="caption"></div>
             <div class="boundary">
