@@ -30,10 +30,20 @@
       app.controller('gameCtrl', function($scope, $http, $compile) {});
 
 
-      var init = function() {
-         Game.initStage1();
+      var game = null;
+      var stage1 = function() {
+         if (game == null) { game = new Game.Stages(); }
+         game.stage1();
       };
-   
+      var stage2 = function() {
+         if (game == null) { game = new Game.Stages(); }
+         game.stage2();
+      };
+      var stage3 = function() {
+         if (game == null) { game = new Game.Stages(); }
+         game.stage3();
+      };
+
       window.onload = function() {
       };
 
@@ -43,7 +53,7 @@
 
 <body data-ng-app='game'> 
    <div data-ng-controller='gameCtrl' data-ng-init='init2();'>
-      <div id="user-points" onclick="init();">
+      <div id="user-points">
          <span>Score: 0</span>
       </div>
 
@@ -69,6 +79,12 @@
 
       <div id='midi-devices'>
          <ul id='devices-list' class='devices'></ul>
+      </div>
+
+      <div id='stages'>
+         <div class='stage' onclick='stage1();'>1</div>
+         <div class='stage' onclick='stage2();'>2</div>
+         <div class='stage' onclick='stage3();'>3</div>
       </div>
 </body>
 

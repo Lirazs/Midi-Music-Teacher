@@ -31,6 +31,14 @@ Quizzer.NotesGame.prototype.restrictKeys = function(allowed_keys) {
    self._allowed_keys = allowed_keys;
 };
 
+Quizzer.NotesGame.prototype.abort = function() {
+   var self = this;
+   if (self._timer != null) {
+      self._timer.abort();
+   }
+   self._timer = null;
+};
+
 Quizzer.NotesGame.prototype.quizz = function(millisecs, correct_score, mistake_score, timeout_score, onTimeout) {
    var self = this;
    self._correct_score = correct_score;
