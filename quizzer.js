@@ -11,12 +11,12 @@ Quizzer.randomInt = function(min, max) {
 
 
 
-Quizzer.NotesGame = function(question_id, score_id, timer_id) {
+Quizzer.NotesGame = function(score_id, timer_id, keyname_id) {
    var self = this;
    self._timer = null;
    self._timer_id = timer_id;
    self._score_element = document.getElementById(score_id);
-   self._note_element = document.getElementById(question_id);
+   self._note_element = document.getElementById(keyname_id);
    self._points = 0;
    self._correct_score = 0;
    self._mistake_score = 0;
@@ -28,12 +28,14 @@ Quizzer.NotesGame.prototype.quizz = function(millisecs, correct_score, mistake_s
    self._correct_score = correct_score;
    self._mistake_score = mistake_score;
    self._target_note = Quizzer.randomInt(0,12);
-   self._note_element.querySelector('span').innerHTML = Quizzer.notes[self._target_note][0]+Quizzer.notes[self._target_note][1];
+   self._show_keyname(self._target_note);
 
    self._timer = new Widgets.CountDown(millisecs, 50,
       function() {
          self._set_score(self._points+timeout_score);
-         onTimeout(self);
+         if (onTimeout) {
+            onTimeout(self);
+         }
       },
       function(t) {
          Widgets.setProgress(self._timer_id, t.remaining(), t.remaining()/millisecs);
@@ -57,6 +59,14 @@ Quizzer.NotesGame.prototype._set_score = function(score) {
    var self = this;
    self._points = score;
    self._score_element.querySelector('span').innerHTML = "Score: " + self._points.toString();
+};
+
+
+Quizzer.NotesGame.prototype._show_keyname = function(key_index) {
+   var self = this;
+   if (self._note_element) {
+      self._note_element.querySelector('span').innerHTML = Quizzer.notes[key_index][0]+Quizzer.notes[key_index][1];
+   }
 };
 
 }(window.Quizzer = window.Quizzer  || {}));

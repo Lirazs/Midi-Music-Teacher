@@ -38,7 +38,7 @@
 
          $scope.init = function() {
             $scope.octave = new Keyboard.Octave(document.getElementById('octave'));
-            $scope.game = new Quizzer.NotesGame('asked-note-name', 'user-points', 'timer');
+            $scope.game = new Quizzer.NotesGame('user-points', 'timer', 'asked-note-name');
 
             $scope.midi = new Midi.Controller(
                function(ok_flag, devices, msg) {
