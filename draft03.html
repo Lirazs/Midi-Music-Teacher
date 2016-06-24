@@ -18,6 +18,9 @@
    <script src="keyboard.js"></script>
    <link rel="stylesheet" type="text/css" href="keyboard.css"/>
 
+   <script src="vexflow-min.js"></script>
+   <script src="score.js"></script>
+
 
    <link rel="stylesheet" type="text/css" href="draft03.css"/>
    <script>
@@ -37,8 +40,10 @@
          };
 
          $scope.init = function() {
+            var stave = new Score.Stave("stave", "treble");
+
             $scope.octave = new Keyboard.Octave(document.getElementById('octave'));
-            $scope.game = new Quizzer.NotesGame('user-points', 'timer', 'asked-note-name');
+            $scope.game = new Quizzer.NotesGame('user-points', 'timer', 'asked-note-name', stave);
 
             $scope.midi = new Midi.Controller(
                function(ok_flag, devices, msg) {
@@ -92,6 +97,8 @@
       <div id='keyboard'>
          <octave id='octave'></octave>
       </div>
+
+      <canvas class='question-box' id='stave' width='150' height='150'></canvas>
 
       <div id='midi-devices'>
          <ul id='devices-list' class='devices'></ul>
