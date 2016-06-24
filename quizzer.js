@@ -22,15 +22,20 @@ Quizzer.NotesGame = function(score_id, timer_id, keyname_id, stave) {
    self._correct_score = 0;
    self._mistake_score = 0;
    self._target_note = null;
+   self._target_octave = null;
    self._target_accidental = '';
 };
 
-Quizzer.NotesGame.prototype.quizz = function(millisecs, correct_score, mistake_score, timeout_score, onTimeout) {
+Quizzer.NotesGame.prototype.quizz = function(millisecs, correct_score, mistake_score, timeout_score, onTimeout, octaves_list) {
    var self = this;
    self._correct_score = correct_score;
    self._mistake_score = mistake_score;
-
    self._target_note = Quizzer.randomInt(0,12);
+   if (octaves_list) {
+      self._target_octave = null;
+   } else {
+      self._target_octave = octaves_list[Quizzer.randomInt(0,octaves_list.length)];
+   }
    self._target_accidental = Quizzer.notes[self._target_note][1];
    if (self._target_accidental != '') {
       self._target_accidental = (Quizzer.randomInt(0, 2) == 0)?'#':'b';
@@ -53,12 +58,21 @@ Quizzer.NotesGame.prototype.quizz = function(millisecs, correct_score, mistake_s
    );
 };
 
-Quizzer.NotesGame.prototype.trial = function(note) {
+Quizzer.NotesGame.prototype.trial = function(octave, note) {
    var self = this;
    if (self._target_note == note) {
-      self._timer.abort();
-      self._set_score(self._points+self._correct_score);
-      return true;
+      if (self._target_octave == null) {
+         self._timer.abort();
+         self._set_score(self._points+self._correct_score);
+         return true;
+      } else if (self._target_octave == octave) {
+         self._timer.abort();
+         self._set_score(self._points+self._correct_score);
+         return true;
+      } else {
+         self._set_score(self._points+self._mistake_score);
+         return false;
+      }
    } else {
       self._set_score(self._points+self._mistake_score);
       return false;
