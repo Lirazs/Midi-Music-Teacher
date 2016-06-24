@@ -1,0 +1,172 @@
+<html>
+
+<head>
+   <title>MIDI Draft 03</title>
+   <link rel="icon" href="data:;base64,iVBORw0KGgo="/>
+
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+
+   <script src="midi_devices.js"></script>
+
+   <script src="ui.js"></script>
+   <link rel="stylesheet" type="text/css" href="ui.css"/>
+
+   <script src="keyboard.js"></script>
+   <link rel="stylesheet" type="text/css" href="keyboard.css"/>
+
+
+   <link rel="stylesheet" type="text/css" href="draft03.css"/>
+   <script>
+
+      var initDeviceList = function(devices, element) {
+         var inputs = devices.inputs();
+         for (var i = 0; i < inputs.length; ++i) {
+            var ID = 'midi_input_' + i.toString();
+            var led_type = (inputs[i].state == 'connected')? 'green' : 'red';
+            var title = inputs[i].name + ' (' + inputs[i].version + ')';
+            element.innerHTML += "<li><div id="+ID+" class='led "+led_type+"'></div><span class='device-name'>"+title+"</span></li>";
+            devices.watchInput(inputs[i].port, function(port, state) {
+               if (state == 'connected') {
+                  element.querySelector('#'+ID).classList.remove('red');
+                  element.querySelector('#'+ID).classList.add('green');
+               } else {
+                  element.querySelector('#'+ID).classList.remove('green');
+                  elementlist.querySelector('#'+ID).classList.add('red');
+               }
+            });
+         }    
+      };
+
+      var notes = {0: ['C', ''], 1: ['C', '#'], 2: ['D', ''], 3: ['D', '#'], 4: ['E', ''], 5: ['F', ''],
+                   6: ['F', '#'], 7: ['G', ''], 8: ['G', '#'], 9: ['A', ''], 10: ['A', '#'], 11: ['B', '']};
+
+
+
+      function randomInt(min, max) {
+         return Math.floor(Math.random() * (max - min)) + min;
+      }
+
+
+
+      function NotesGame(question_id, score_id, timer_id) {
+         var self = this;
+         self._timer = null;
+         self._timer_id = timer_id;
+         self._score_element = document.getElementById(score_id);
+         self._note_element = document.getElementById(question_id);
+         self._points = 0;
+         self._correct_score = 0;
+         self._mistake_score = 0;
+         self._target_note = null;
+      };
+
+      NotesGame.prototype.quizz = function(correct_score, mistake_score, timeout_score, onTimeout) {
+         var self = this;
+         self._correct_score = correct_score;
+         self._mistake_score = mistake_score;
+         self._target_note = randomInt(0,12);
+         self._note_element.querySelector('span').innerHTML = notes[self._target_note][0]+notes[self._target_note][1];
+
+         self._timer = new Widgets.CountDown(5000, 50,
+            function() {
+               self._points += timeout_score;
+               self._score_element.querySelector('span').innerHTML = "Score: " + self._points.toString();
+               onTimeout(self);
+            },
+            function(t) {
+               Widgets.setProgress(self._timer_id, t.remaining(), t.remaining()/5000);
+            }
+         );
+      };
+
+      NotesGame.prototype.trial = function(note) {
+         var self = this;
+         if (self._target_note == note) {
+            self._timer.abort();
+            self._points += self._correct_score;
+            self._score_element.querySelector('span').innerHTML = "Score: " + self._points.toString();
+            return true;
+         } else {
+            self._points += self._mistake_score;
+            self._score_element.querySelector('span').innerHTML = "Score: " + self._points.toString();
+            return false;
+         }
+      };
+// Optional Octaves
+// New Round: Show "YEY" and wait for 1 sec.
+
+
+      var app = angular.module('draft', ['keyboard']);
+      
+      app.controller('draftCtrl', function($scope, $http, $compile) {
+         $scope.midi = null;
+         $scope.octave = null;
+
+         $scope.newRound = function() {
+            $scope.game.quizz(+3, -1, -2, function() {            
+//               alert('timeout!');
+            });
+         };
+
+         $scope.init = function() {
+            $scope.octave = new Keyboard.Octave(document.getElementById('octave'));
+            $scope.game = new NotesGame('asked-note-name', 'user-points', 'timer');
+
+            $scope.midi = new Midi.Controller(
+               function(ok_flag, devices, msg) {
+                  if (!ok_flag) {
+                     alert('Midi is unsupported by the browser: ' + msg);
+                     return;
+                  }
+                  initDeviceList(devices, document.getElementById('devices-list'));
+                  $scope.newRound();
+               },
+               function(octave, note_index) {
+                  $scope.octave.pressKey(note_index);
+                  if ($scope.game.trial(note_index)) {
+                     setTimeout(function() { 
+                        $scope.newRound();
+                     }, 1000);
+                  }
+               },
+               function(octave, note_index) {
+                  $scope.octave.releaseKey(note_index);
+               }
+            );
+         };
+      });
+
+   </script>
+</head>
+
+
+<body data-ng-app='draft'> 
+   <div data-ng-controller='draftCtrl' data-ng-init='init();'>
+
+      <div id="user-points">
+         <span>Score: 0</span>
+      </div>
+
+      <div id='asked-note-name'><span>F#</span></div>
+
+      <div id='timerdiv'>
+         <div id='timer' class="progress">
+            <div class="caption"></div>
+            <div class="boundary">
+               <div class="halfcirc"></div>
+               <div class="halfcirc second"></div>
+            </div>
+         </div>
+      </div>
+
+      <div id='keyboard'>
+         <octave id='octave'></octave>
+      </div>
+
+      <div id='midi-devices'>
+         <ul id='devices-list' class='devices'></ul>
+      </div>
+   </div>
+</body>
+
+</html>
