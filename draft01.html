@@ -25,7 +25,7 @@
       var sequence = [];
 
       window.onload = function() {
-         my_octave = new Keyboard.Octave('myoct');
+         my_octave = new Keyboard.Octave(document.getElementById('myoct'));
          my_stave = new Score.Stave("stave", "treble");
 
          var text_position = 10;

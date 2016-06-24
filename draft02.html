@@ -39,7 +39,6 @@
       var newTest = function() {
          points_delta = +2;
          target_note = randomInt(0, 12);
-         console.log(target_note, tone2name[target_note]);
          my_stave.drawBeat([{name: tone2name[target_note][0], accidental: tone2name[target_note][1], octave: 4}], 4,
                             {text: tone2name[target_note][0]+tone2name[target_note][1], position: 10});
          my_timer = new Widgets.CountDown(5000, 50,
@@ -62,7 +61,7 @@
 
       window.onload = function() {
          my_stave = new Score.Stave("stave", "treble");
-         my_octave = new Keyboard.Octave('myoct');
+         my_octave = new Keyboard.Octave(document.getElementById('myoct'));
          newTest();
       }
 
