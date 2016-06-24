@@ -29,9 +29,12 @@ body {
 }
 
 .question-box {
+   height: 150px;
+   width: 150px;
    border-radius: 50px;
    border: 5px grey solid;
    box-shadow: rgba(0, 0, 0, 0.7) 5px 10px 10px 4px;
+   line-height: 150px; 
    background-color: white;
 }
 
@@ -68,16 +71,12 @@ body {
    left: 45%;
 }
 
-
 #asked-note-name {
-   height: 150px;
-   width: 150px;
-   line-height: 150px; 
    position: absolute;
    left: 35%;
 }
 
-#asked-note-name > span  {
+.question-box > span  {
    color: black;
    font-size: 3em;
    text-align: center;
