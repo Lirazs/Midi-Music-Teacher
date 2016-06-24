@@ -109,4 +109,36 @@ Midi.Devices.prototype._devices = function(devices) {
 };
 
 
+
+Midi.Controller = function(onInit, onPress, onRelease) {
+   var self = this;
+   self._devices = new Midi.Devices(function(flag, msg) {
+      if (!flag) {
+         onInit(false, self._devices, msg);
+         return;
+      }
+      onInit(true, self._devices, '');
+
+      var inputs = self._devices.inputs();
+      for (var i = 0; i < inputs.length; ++i) {
+         self._devices.openInput(inputs[i].port, function(port, midi_event) {
+            var octave_number = Math.floor((midi_event.note-12)/12);
+            var note_index = (midi_event.note-12)%12;
+            if (midi_event.command == 0x09) { // Note On
+               if ((midi_event.velocity < 2) || (midi_event.velocity == 64))  {
+                  onRelease(octave_number, note_index);
+               } else {
+                  onPress(octave_number, note_index);
+               }
+            } else if (midi_event.command == 0x08) { // Note Off
+               onRelease(octave_number, note_index);
+            }
+         });
+      }
+   });
+};
+
+
+
+
 }(window.Midi = window.Midi || {}));

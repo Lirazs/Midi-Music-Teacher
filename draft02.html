@@ -71,68 +71,59 @@
       });
 
 
-      var midi = new Midi.Devices(function(flag, msg) {
-         if (!flag) {
-            alert('Midi is unsupported by the browser: ' + msg);
-            return;
-         }
-         
-         var devices_list = document.getElementById('devices-list');
-         var inputs = midi.inputs();
-         for (var i = 0; i < inputs.length; ++i) {
-            var ID = 'midi_input_' + i.toString();
-            var led_type = (inputs[i].state == 'connected')? 'green' : 'red';
-            var title = inputs[i].name + ' (' + inputs[i].version + ')';
-            devices_list.innerHTML += "<li><div id="+ID+" class='led "+led_type+"'></div><span class='device-name'>"+title+"</span></li>";
-            midi.watchInput(inputs[i].port, function(port, state) {
-               if (state == 'connected') {
-                  devices_list.querySelector('#'+ID).classList.remove('red');
-                  devices_list.querySelector('#'+ID).classList.add('green');
-               } else {
-                  devices_list.querySelector('#'+ID).classList.remove('green');
-                  devices_list.querySelector('#'+ID).classList.add('red');
-               }
-            });
-            midi.openInput(inputs[i].port, function(port, midi_event) {
-
-               if (midi_event.command == 0x09) { // Note On
-                  var octave_number = Math.floor((midi_event.note-12)/12);
-                  var note_index = (midi_event.note-12)%12;
-                  if ((midi_event.velocity < 2) || (midi_event.velocity == 64))  {
-                     my_octave.releaseKey(note_index);
+      var midi = new Midi.Controller(
+         function(ok_flag, devices, msg) {
+            if (!ok_flag) {
+               alert('Midi is unsupported by the browser: ' + msg);
+               return;
+            }
+            
+            var devices_list = document.getElementById('devices-list');
+            var inputs = devices.inputs();
+            for (var i = 0; i < inputs.length; ++i) {
+               var ID = 'midi_input_' + i.toString();
+               var led_type = (inputs[i].state == 'connected')? 'green' : 'red';
+               var title = inputs[i].name + ' (' + inputs[i].version + ')';
+               devices_list.innerHTML += "<li><div id="+ID+" class='led "+led_type+"'></div><span class='device-name'>"+title+"</span></li>";
+               devices.watchInput(inputs[i].port, function(port, state) {
+                  if (state == 'connected') {
+                     devices_list.querySelector('#'+ID).classList.remove('red');
+                     devices_list.querySelector('#'+ID).classList.add('green');
                   } else {
-                     my_octave.pressKey(note_index);
-                     if (note_index == target_note) {
-                        my_timer.abort();
-                        my_octave.markKey(note_index);
-                        updateUserScore(points+points_delta);
-                        setTimeout(function() { 
-                           my_octave.unmarkKey(note_index);
-                           newTest();
-                        }, 1000);
-                     } else {
-                        updateUserScore(points-1);
-                        var sequence = [{ notes: [{name: tone2name[target_note][0], accidental: tone2name[target_note][1], octave: 4}],
-                                          duration: 4,
-                                          annotation: {text: tone2name[target_note][0]+tone2name[target_note][1], position: 10}
-                                        },
-                                        { notes: [{name: tone2name[note_index][0], accidental: tone2name[note_index][1], octave: 4, color: "yellow"}],
-                                          duration: 4,
-                                          annotation: {text: tone2name[note_index][0]+tone2name[note_index][1], position: 10}}
-                                       ];
-                        my_stave.drawSequence(sequence);
-                     }
+                     devices_list.querySelector('#'+ID).classList.remove('green');
+                     devices_list.querySelector('#'+ID).classList.add('red');
                   }
-               } else if (midi_event.command == 0x08) { // Note Off
-                  var octave_number = Math.floor((midi_event.note-12)/12);
-                  var note_index = (midi_event.note-12)%12;
-                  my_octave.releaseKey(note_index);
-               } else {
-                  alert(midi_event.command);
-               }
-            });
+               });
+            }
+         },
+         function(octave, note_index) {
+            my_octave.pressKey(note_index);
+            if (note_index == target_note) {
+               my_timer.abort();
+               my_octave.markKey(note_index);
+               updateUserScore(points+points_delta);
+               setTimeout(function() { 
+                  my_octave.unmarkKey(note_index);
+                  newTest();
+               }, 1000);
+            } else {
+               updateUserScore(points-1);
+               var sequence = [{ notes: [{name: tone2name[target_note][0], accidental: tone2name[target_note][1], octave: 4}],
+                                 duration: 4,
+                                 annotation: {text: tone2name[target_note][0]+tone2name[target_note][1], position: 10}
+                               },
+                               { notes: [{name: tone2name[note_index][0], accidental: tone2name[note_index][1], octave: 4, color: "yellow"}],
+                                 duration: 4,
+                                 annotation: {text: tone2name[note_index][0]+tone2name[note_index][1], position: 10}}
+                              ];
+               my_stave.drawSequence(sequence);
+            }
+         },
+         function(octave, note_index) {
+            my_octave.releaseKey(note_index);
          }
-      });
+      );
+
 
 
    </script>
