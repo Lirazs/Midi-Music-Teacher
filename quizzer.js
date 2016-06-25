@@ -47,15 +47,15 @@ Quizzer.NotesGame.prototype.quizz = function(millisecs, correct_score, mistake_s
    self._mistake_score = mistake_score;
 
    if (octaves_list) {
-      self._target_octave = null;
+      self._target_octave = octaves_list[Quizzer.randomInt(0, octaves_list.length)];
    } else {
-      self._target_octave = octaves_list[Quizzer.randomInt(0,octaves_list.length)];
+      self._target_octave = null;
    }
 
    if (self._allowed_keys == null) {
       self._target_key = Quizzer.randomInt(0,12);
    } else {
-      self._target_key = self._allowed_keys[Quizzer.randomInt(0,self._allowed_keys.length)];
+      self._target_key = self._allowed_keys[Quizzer.randomInt(0, self._allowed_keys.length)];
    }
    self._target_name = Quizzer.keys[self._target_key][Quizzer.randomInt(0, Quizzer.keys[self._target_key].length)];
 
@@ -90,6 +90,8 @@ Quizzer.NotesGame.prototype.trial = function(octave, note) {
          self._set_score(self._points+self._mistake_score);
          return false;
       }
+   }
+}
 
 Quizzer.NotesGame.prototype._set_score = function(score) {
    var self = this;
@@ -104,12 +106,11 @@ Quizzer.NotesGame.prototype._show_keyname = function(note_name) {
    }
 };
 
-Quizzer.NotesGame.prototype._show_note= function(note_name) {
+Quizzer.NotesGame.prototype._show_note = function(note_name) {
    var self = this;
    if (self._stave) {
       self._stave.drawBeat([{name: note_name[0], accidental: note_name[1], octave: 4}], 4);
    }
- 
 };
 
 }(window.Quizzer = window.Quizzer  || {}));
