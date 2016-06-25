@@ -11,7 +11,7 @@ Score.Stave = function(canvasId, clef_name, time_signature) {
    self._renderer = new Vex.Flow.Renderer(self._canvas, Vex.Flow.Renderer.Backends.CANVAS);
    self._ctx = self._renderer.getContext();
    self._width = self._canvas.width-10;
-   self._stave = new Vex.Flow.Stave(0, 0, self._width);
+   self._stave = new Vex.Flow.Stave(5, 10, self._width);
    self._stave.addClef(clef_name);
    if (time_signature) {
       self._stave.addTimeSignature(time_signature);
