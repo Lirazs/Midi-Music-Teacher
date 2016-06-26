@@ -9,6 +9,7 @@ Chapter2.Engine = function(quizzer, piano, quizz_widget, timeout, adaptive_timou
    self._quizzer.restrictKeys(allowed_keys);
    self._wait_for_round = false;
    self._adaptive_timeout = adaptive_timout;
+   self._allowed_keys = allowed_keys;
 
    piano.annotation(false);
 };
@@ -18,11 +19,25 @@ Chapter2.Engine.prototype.abort = function() {
    self._quizzer.abort();
 };
 
+Chapter2.Engine.prototype.start = function() {
+   var self = this;
+   self._piano.unmarkKeys();
+   self._allowed_keys.forEach(function (key) {
+      self._piano.markKey(4, key);
+      self._piano.markKey(5, key);
+   });
+   self._piano.annotation(true);
+   setTimeout(function() { 
+      self._piano.annotation(false);
+      self.newRound();
+   }, 3000);
+};
+
 Chapter2.Engine.prototype.newRound = function() {
    var self = this;
    self._quizz_widget.reset();
    self._piano.releaseKeys();
-   self._quizzer.quizz(self._timeout, +3, -1, -2, function() {
+   self._quizzer.quizz(self._timeout, +1, -2, -4, function() {
       var target = self._quizzer.getTarget();
       self._piano.markKey(target.octave, target.key_index);
       self._piano.annotation(true);
@@ -45,7 +60,9 @@ Chapter2.Engine.prototype.onPress = function(octave, note_index) {
    if (self._quizzer.trial(octave, note_index)) {
       self._wait_for_round = true;
       Common.feedbackCorrect('keyboard');
-      self._piano.unmarkKeys();
+      var target = self._quizzer.getTarget();
+      self._piano.markKey(target.octave, target.key_index);
+      self._piano.annotation(true);
       if (self._adaptive_timeout) {
          self._timeout = (used == self._timeout)? self._timeout+500 : Math.floor((used+self._timeout)/2.0);
       }
@@ -98,7 +115,7 @@ Chapter2.Stages.prototype._init_midi = function() {
          }
          Common.initDeviceList(devices, document.getElementById('devices-list'));
          if (self._game) {
-            self._game.newRound();
+            self._game.start();
          }
       },
       function(octave, note_index) {
@@ -143,17 +160,27 @@ Chapter2.Stages.prototype._keys_stage = function(allowed_keys, timeout, adaptive
                          function(key, info) {self._game.onRelease(info, key);});
 
    if (!self._init_midi()) {
-      self._game.newRound();
+      self._game.start();
    }
 };
 
 
 Chapter2.Stages.prototype.stage1 = function() {
    var self = this;
-   self._keys_stage([0,2,4,5,7,9,11], 5000, false);
+   self._keys_stage([0,5], 5000, false);
 };
 
 Chapter2.Stages.prototype.stage2 = function() {
+   var self = this;
+   self._keys_stage([0,5,11], 5000, false);
+};
+
+Chapter2.Stages.prototype.stage3 = function() {
+   var self = this;
+   self._keys_stage([0,2,4,5,7,9,11], 5000, false);
+};
+
+Chapter2.Stages.prototype.stage4 = function() {
    var self = this;
    self._keys_stage([0,2,4,5,7,9,11], 5000, true);
 };

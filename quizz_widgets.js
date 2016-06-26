@@ -58,7 +58,7 @@ QuizzWidgets.SimpleStave.prototype.taggleSymbol = function(octave, name, acciden
    var self = this;
    for (var i = 0; i < self._sequence.length; ++i) {
       if ((self._sequence[i].notes[0].name == name.toLowerCase()) && (self._sequence[i].notes[0].octave == octave)) {
-         self._sequence[i].notes[0].color = flag ? 'blue' : 'black';
+         self._sequence[i].notes[0].color = flag ? 'red' : 'black';
          break;
       }
    }

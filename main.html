@@ -1,0 +1,145 @@
+<html>
+
+<head>
+   <title>Main</title>
+   <link rel="icon" href="data:;base64,iVBORw0KGgo="/>
+
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+
+   <script src="common.js"></script>
+   <link rel="stylesheet" type="text/css" href="common.css"/>
+
+   <script src="vexflow-min.js"></script>
+   <script src="score.js"></script>
+   <script src="midi_devices.js"></script>
+
+   <link rel="stylesheet" type="text/css" href="quizz_widgets.css"/>
+   <script src="keyboard.js"></script>
+   <link rel="stylesheet" type="text/css" href="keyboard.css"/>
+
+   <script>
+      var my_stave = null;
+      var my_octave = null;
+      var sequence = [];
+
+      var tone2name = {0: ['C', ''], 1: ['C', '#'], 2: ['D', ''], 3: ['D', '#'], 4: ['E', ''], 5: ['F', ''],
+                       6: ['F', '#'], 7: ['G', ''], 8: ['G', '#'], 9: ['A', ''], 10: ['A', '#'], 11: ['B', '']};
+
+
+
+      window.onload = function() {
+         my_octave = new Keyboard.Octave(document.getElementById('myoct'));
+         my_stave = new Score.Stave("stave", "treble");
+
+         var text_position = 10;
+         var octave = 4;
+         sequence = [
+                     {notes: [{name: 'c', octave: octave}], duration: 4, annotation: {text: 'C', position: text_position}},
+                     {notes: [{name: 'c', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'C#', position: text_position}},
+                     {notes: [{name: 'd', octave: octave}], duration: 4, annotation: {text: 'D', position: text_position}},
+                     {notes: [{name: 'd', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'D#', position: text_position}},
+                     {notes: [{name: 'e', octave: octave}], duration: 4, annotation: {text: 'E', position: text_position}},
+                     {notes: [{name: 'f', octave: octave}], duration: 4, annotation: {text: 'F', position: text_position}},
+                     {notes: [{name: 'f', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'F#', position: text_position}},
+                     {notes: [{name: 'g', octave: octave}], duration: 4, annotation: {text: 'G', position: text_position}},
+                     {notes: [{name: 'g', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'G#', position: text_position}},
+                     {notes: [{name: 'a', octave: octave}], duration: 4, annotation: {text: 'A', position: text_position}},
+                     {notes: [{name: 'a', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'A#', position: text_position}},
+                     {notes: [{name: 'b', octave: octave}], duration: 4, annotation: {text: 'B', position: text_position}},
+                  ];
+         my_stave.drawSequence(sequence);
+      }
+
+      var app = angular.module('main', ['keyboard']);
+      
+      app.controller('mainCtrl', function($scope, $http) {
+      });
+
+
+
+      var midi = new Midi.Controller(
+         function(ok_flag, devices, msg) {
+            if (!ok_flag) {
+               alert('Midi is unsupported by the browser: ' + msg);
+               return;
+            }
+            Common.initDeviceList(devices, document.getElementById('devices-list'));
+         },
+         function(octave, note_index) {
+            my_octave.pressKey(note_index);
+            sequence[note_index].notes[0].color = 'blue';
+            my_stave.drawSequence(sequence);
+         },
+         function(octave, note_index) {
+            my_octave.releaseKey(note_index);
+            sequence[note_index].notes[0].color = '';
+            my_stave.drawSequence(sequence);
+         }
+      );
+
+
+   </script>
+
+
+
+   <style>
+      #stave {
+         width: 780px;
+      }
+
+
+      #keyboard {
+         position: absolute;
+         top: 225px;
+         left: 50%;
+         transform: translate(-50%, 0);
+
+         height: 300px;
+         width: 780px;
+         border: 5px solid grey;
+         background-color: grey;
+      }
+
+      #chapters {
+         background-color: rgba(200, 200, 200, 0.5);
+         width: 400px;
+         padding: 10px 10px 10px 10px;
+
+         position: absolute;
+         top: 650px;
+         left: 50%;
+         transform: translate(-50%, 0);
+
+         border: 5px solid grey;
+         text-align: center;
+         font-size: 1.5em;
+      }
+   </style>
+
+</head>
+
+<body data-ng-app='main'> 
+   <div data-ng-controller='mainCtrl'>
+      <div id='quizz'>
+         <canvas id='stave' class='question-box long' width='700' height='150'></canvas>
+      </div>
+
+
+
+      <div id='keyboard'>
+         <octave id='myoct'></octave>
+      </div>
+
+      <div id='midi-devices'>
+         <ul id='devices-list' class='devices'></ul>
+      </div>
+
+      <div id='chapters'>
+         <p><a href="/chapter1.html">Chapter 1: Key Names</a></p>
+         <p><a href="/chapter2.html">Chapter 2: Symbols - Part 1</a></p>
+         <p><a href="/chapter3.html">Chapter 3: Symbols - Part 2</a></p>
+      </div>
+   </div>
+</body>
+
+</html>

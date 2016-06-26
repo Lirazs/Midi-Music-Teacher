@@ -48,6 +48,16 @@
          if (game == null) { game = new Chapter2.Stages(piano); }
          game.stage2();
       };
+      var stage3 = function() {
+         if (game == null) { game = new Chapter2.Stages(piano); }
+         game.stage3();
+      };
+      var stage4 = function() {
+         if (game == null) { game = new Chapter2.Stages(piano); }
+         game.stage4();
+      };
+
+
 
 
       window.onload = function() {
@@ -84,6 +94,8 @@
       <div id='stages'>
          <div class='stage' onclick='stage1();'>1</div>
          <div class='stage' onclick='stage2();'>2</div>
+         <div class='stage' onclick='stage3();'>3</div>
+         <div class='stage' onclick='stage4();'>4</div>
       </div>
 
       <div id='midi-devices'>
