@@ -16,6 +16,7 @@ Quizzer.NotesGame = function(score_id, timer_id, keyname_id, stave) {
    var self = this;
    self._timer = null;
    self._timer_id = timer_id;
+   self._given_time = 0;
    self._score_element = document.getElementById(score_id);
    self._stave = stave;
    self._note_element = keyname_id? document.getElementById(keyname_id) : null;
@@ -25,7 +26,7 @@ Quizzer.NotesGame = function(score_id, timer_id, keyname_id, stave) {
    self._target_key = null;
    self._target_name = '';
    self._allowed_keys = null;
-   self._target_octave = null;   
+   self._target_octave = null;
 };
 
 Quizzer.NotesGame.prototype.restrictKeys = function(allowed_keys) {
@@ -41,10 +42,16 @@ Quizzer.NotesGame.prototype.abort = function() {
    self._timer = null;
 };
 
+Quizzer.NotesGame.prototype.timeUsed = function() {
+   var self = this;
+   return self._given_time - self._timer.remaining();
+};
+
 Quizzer.NotesGame.prototype.quizz = function(millisecs, correct_score, mistake_score, timeout_score, onTimeout, octaves_list) {
    var self = this;
    self._correct_score = correct_score;
    self._mistake_score = mistake_score;
+   self._given_time = millisecs;
 
    if (octaves_list) {
       self._target_octave = octaves_list[Quizzer.randomInt(0, octaves_list.length)];

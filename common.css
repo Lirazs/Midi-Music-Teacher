@@ -149,9 +149,9 @@ body {
 #stages {
    position: absolute;
    left: 2%;
-   top: 50%;
+   top: 40%;
    transform: translate(-2%, -50%);
-   height: 400px;
+   height: 300px;
    width: 100px;
 
    border: 2px grey solid;
