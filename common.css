@@ -51,51 +51,7 @@ body {
 
    height: 175px;
    width: 750px;
-//   border: 1px solid white;
-//   border-radius: 20px;
 }
-
-#keyboard {
-   position: absolute;
-   top: 225px;
-   left: 50%;
-   transform: translate(-50%, 0);
-
-   height: 300px;
-   width: 700px;
-   border: 5px solid grey;
-   background-color: grey;
-}
-
-#keyboard > .feedback {
-   position: absolute;
-   width: 102%;
-   height: 102%;
-   top: -1%;
-   left: -1%;
-}
-
-#keyboard > .feedback.none {
-   opacity: 1;
-}
-
-#keyboard > .feedback.correct {
-   opacity: 0;
-   box-shadow: #89FF00 0px 0px 15px 4px;
-   transition: opacity .75s ease-in-out;
-   -moz-transition: opacity .75s ease-in-out;
-   -webkit-transition: opacity .75s ease-in-out;
-}
-
-#keyboard > .feedback.wrong {
-   opacity: 0;
-   box-shadow: #FF1200 0px 0px 15px 6px;
-   transition: opacity .75s ease-in-out;
-   -moz-transition: opacity .75s ease-in-out;
-   -webkit-transition: opacity .75s ease-in-out;
-}
-
-
 
 #midi-devices {
    width: 500px;
@@ -146,12 +102,39 @@ body {
 }
 
 
+.feedback {
+   position: absolute;
+   width: 102%;
+   height: 102%;
+   top: -1%;
+   left: -1%;
+}
+
+.feedback.none {
+   opacity: 1;
+}
+
+.feedback.correct {
+   opacity: 0;
+   box-shadow: #89FF00 0px 0px 15px 4px;
+   transition: opacity .75s ease-in-out;
+   -moz-transition: opacity .75s ease-in-out;
+   -webkit-transition: opacity .75s ease-in-out;
+}
+
+.feedback.wrong {
+   opacity: 0;
+   box-shadow: #FF1200 0px 0px 15px 6px;
+   transition: opacity .75s ease-in-out;
+   -moz-transition: opacity .75s ease-in-out;
+   -webkit-transition: opacity .75s ease-in-out;
+}
+
 #stages {
    position: absolute;
    left: 2%;
    top: 40%;
    transform: translate(-2%, -50%);
-   height: 300px;
    width: 100px;
 
    border: 2px grey solid;
@@ -168,7 +151,7 @@ body {
    left: 50%;
    transform: translate(-50%, 0);
 
-   margin-top: 5px;
+   margin: 7px 0 7px 0;
    border-radius: 50%;
    border: 2px solid black;
    box-shadow: rgba(0, 0, 0, 0.7) 1px 2px 2px 1px;

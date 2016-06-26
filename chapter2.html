@@ -1,7 +1,7 @@
 <html>
 
 <head>
-   <title>MIDI Game 1</title>
+   <title>Chapter 2</title>
    <link rel="icon" href="data:;base64,iVBORw0KGgo="/>
 
    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
@@ -22,27 +22,40 @@
    <script src="score.js"></script>
 
 
-   <script src="game.js"></script>
-   <link rel="stylesheet" type="text/css" href="game.css"/>
+   <script src="chapter2.js"></script>
+   <link rel="stylesheet" type="text/css" href="chapter2.css"/>
    <script>
 
-      var app = angular.module('game', ['keyboard']);
-      app.controller('gameCtrl', function($scope, $http, $compile) {});
+      var piano = null;
+      var app = angular.module('Chapter2', ['keyboard']);
+      app.controller('gameCtrl', function($scope, $http, $compile) {
+         $scope.init = function() {
+            piano = new Keyboard.Range(document.getElementById('keyboard'), [4, 5], $compile, $scope);
+         };
+      });
 
-
+ 
       var game = null;
+
       var stage1 = function() {
-         if (game == null) { game = new Game.Stages(); }
+         if (game == null) { game = new Chapter2.Stages(piano); }
          game.stage1();
       };
       var stage2 = function() {
-         if (game == null) { game = new Game.Stages(); }
+         if (game == null) { game = new Chapter2.Stages(piano); }
          game.stage2();
       };
       var stage3 = function() {
-         if (game == null) { game = new Game.Stages(); }
+         if (game == null) { game = new Chapter2.Stages(piano); }
          game.stage3();
       };
+      var stage4 = function() {
+         if (game == null) { game = new Chapter2.Stages(piano); }
+         game.stage4();
+      };
+
+
+
 
       window.onload = function() {
       };
@@ -51,15 +64,15 @@
 </head>
 
 
-<body data-ng-app='game'> 
-   <div data-ng-controller='gameCtrl' data-ng-init='init2();'>
+<body data-ng-app='Chapter2'> 
+   <div data-ng-controller='gameCtrl' data-ng-init='init();'>
       <div id="user-points">
          <span>Score: 0</span>
       </div>
 
 
       <div id='quizz'>
-         <div class='question-box' id='asked-note-name'><span></span></div>
+         <div class='question-box' id='asked-note-name'><span>?</span></div>
          <div class='question-box' id='asked-note-symbol'>
             <span>?</span>
             <canvas id='stave' width='150' height='150'></canvas>
@@ -67,7 +80,7 @@
 
          <div id='timer-container'>
             <div id='timer' class="progress">
-               <div class="caption"></div>
+               <div class="caption">0</div>
                <div class="boundary">
                   <div class="halfcirc"></div>
                   <div class="halfcirc second"></div>
@@ -79,17 +92,17 @@
 
       <div id='keyboard'>
          <div class='feedback none'></div>
-         <octave id='octave'></octave>
-      </div>
-
-      <div id='midi-devices'>
-         <ul id='devices-list' class='devices'></ul>
       </div>
 
       <div id='stages'>
          <div class='stage' onclick='stage1();'>1</div>
          <div class='stage' onclick='stage2();'>2</div>
          <div class='stage' onclick='stage3();'>3</div>
+         <div class='stage' onclick='stage4();'>4</div>
+      </div>
+
+      <div id='midi-devices'>
+         <ul id='devices-list' class='devices'></ul>
       </div>
 </body>
 

@@ -1,0 +1,96 @@
+<html>
+
+<head>
+   <title>Chapter 1</title>
+   <link rel="icon" href="data:;base64,iVBORw0KGgo="/>
+
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+
+   <script src="common.js"></script>
+   <link rel="stylesheet" type="text/css" href="common.css"/>
+
+   <script src="midi_devices.js"></script>
+   <script src="quizzer.js"></script>
+
+   <script src="ui.js"></script>
+   <link rel="stylesheet" type="text/css" href="ui.css"/>
+
+   <script src="keyboard.js"></script>
+   <link rel="stylesheet" type="text/css" href="keyboard.css"/>
+
+   <script src="vexflow-min.js"></script>
+   <script src="score.js"></script>
+
+
+   <script src="chapter1.js"></script>
+   <link rel="stylesheet" type="text/css" href="chapter1.css"/>
+   <script>
+
+      var app = angular.module('Chapter1', ['keyboard']);
+      app.controller('gameCtrl', function($scope, $http, $compile) {});
+
+
+      var game = null;
+      var stage1 = function() {
+         if (game == null) { game = new Chapter1.Stages(); }
+         game.stage1();
+      };
+      var stage2 = function() {
+         if (game == null) { game = new Chapter1.Stages(); }
+         game.stage2();
+      };
+      var stage3 = function() {
+         if (game == null) { game = new Chapter1.Stages(); }
+         game.stage3();
+      };
+
+      window.onload = function() {
+      };
+
+   </script>
+</head>
+
+
+<body data-ng-app='Chapter1'> 
+   <div data-ng-controller='gameCtrl'>
+      <div id="user-points">
+         <span>Score: 0</span>
+      </div>
+
+
+      <div id='quizz'>
+         <div class='question-box' id='asked-note-name'><span></span></div>
+         <div class='question-box' id='asked-note-symbol'>
+            <span>?</span>
+            <canvas id='stave' width='150' height='150'></canvas>
+         </div>
+
+         <div id='timer-container'>
+            <div id='timer' class="progress">
+               <div class="caption"></div>
+               <div class="boundary">
+                  <div class="halfcirc"></div>
+                  <div class="halfcirc second"></div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+
+      <div id='keyboard'>
+         <div class='feedback none'></div>
+         <octave id='octave'></octave>
+      </div>
+
+      <div id='midi-devices'>
+         <ul id='devices-list' class='devices'></ul>
+      </div>
+
+      <div id='stages'>
+         <div class='stage' onclick='stage1();'>1</div>
+         <div class='stage' onclick='stage2();'>2</div>
+         <div class='stage' onclick='stage3();'>3</div>
+      </div>
+</body>
+
+</html>

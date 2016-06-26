@@ -27,6 +27,15 @@ angular.module('keyboard', [])
       self._element.querySelector('.'+self._index2ID[key_index]).classList.remove('marked');
    };
 
+   Keyboard.Octave.prototype.unmarkKeys = function() {
+      var self = this;
+      for (var key_index in self._index2ID) {
+         if (self._index2ID.hasOwnProperty(key_index)) {
+            self.unmarkKey(key_index);
+         }
+      }
+   };
+
    Keyboard.Octave.prototype.pressKey = function(key_index) {
       var self = this;
       self._element.querySelector('.'+self._index2ID[key_index]).classList.add('pressed');
@@ -115,5 +124,33 @@ angular.module('keyboard', [])
    };
 
 
+   Keyboard.Range.prototype.unmarkKeys = function() {
+      var self = this;
+      for (var octave in self._octaves) {
+         if (self._octaves.hasOwnProperty(octave)) {
+            self._octaves[octave].unmarkKeys();
+         }
+      }
+   };
 
+   Keyboard.Range.prototype.annotation = function(flag) {
+      var self = this;
+      for (var octave in self._octaves) {
+         if (self._octaves.hasOwnProperty(octave)) {
+            self._octaves[octave].annotation(flag);
+         }
+      }
+   };
+
+   Keyboard.Range.prototype.setScreen = function(onPress, onRelease) {
+      var self = this;
+      for (var octave in self._octaves) {
+         if (self._octaves.hasOwnProperty(octave)) {
+            var set = function(octave_number) {
+               self._octaves[octave_number].setScreen(onPress, onRelease, octave_number);
+            }(octave);
+         }
+      }
+   };
+ 
 }(window.Keyboard = window.Keyboard || {}));

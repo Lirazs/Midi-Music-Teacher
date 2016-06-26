@@ -21,4 +21,25 @@ Common.initDeviceList = function(devices, element) {
 
 
 
+
+
+Common.feedbackCorrect = function(elementID) {
+   document.getElementById(elementID).querySelector('.feedback').classList.remove('none');
+   document.getElementById(elementID).querySelector('.feedback').classList.remove('wrong');
+   document.getElementById(elementID).querySelector('.feedback').classList.add('correct');
+};
+
+Common.feedbackWrong = function(elementID) {
+   document.getElementById(elementID).querySelector('.feedback').classList.remove('none');
+   document.getElementById(elementID).querySelector('.feedback').classList.remove('correct');
+   document.getElementById(elementID).querySelector('.feedback').classList.add('wrong');
+};
+
+Common.feedbackNone = function(elementID) { 
+   document.getElementById(elementID).querySelector('.feedback').classList.remove('wrong');
+   document.getElementById(elementID).querySelector('.feedback').classList.remove('correct');
+   document.getElementById(elementID).querySelector('.feedback').classList.add('none');
+};
+
+
 }(window.Common = window.Common  || {}));

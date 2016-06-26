@@ -66,9 +66,6 @@ Quizzer.NotesGame.prototype.quizz = function(millisecs, correct_score, mistake_s
    }
    self._target_name = Quizzer.keys[self._target_key][Quizzer.randomInt(0, Quizzer.keys[self._target_key].length)];
 
-   self._show_keyname(self._target_name);
-   self._show_note(self._target_name);
-
    self._timer = new Widgets.CountDown(millisecs, 50,
       function() {
          self._set_score(self._points+timeout_score);
@@ -104,17 +101,24 @@ Quizzer.NotesGame.prototype._set_score = function(score) {
    self._score_element.querySelector('span').innerHTML = "Score: " + self._points.toString();
 };
 
-Quizzer.NotesGame.prototype._show_keyname = function(note_name) {
+
+Quizzer.NotesGame.prototype.getTarget = function() {
+   var self = this;
+   return {key_index: self._target_key, octave: self._target_octave};
+};
+
+Quizzer.NotesGame.prototype.showKeyname = function() {
    var self = this;
    if (self._note_element) {
-      self._note_element.querySelector('span').innerHTML = note_name[0]+note_name[1];
+      self._note_element.querySelector('span').innerHTML = self._target_name[0]+self._target_name[1];
    }
 };
 
-Quizzer.NotesGame.prototype._show_note = function(note_name) {
+Quizzer.NotesGame.prototype.showNote = function() {
    var self = this;
    if (self._stave) {
-      self._stave.drawBeat([{name: note_name[0], accidental: note_name[1], octave: 4}], 4);
+      var octave = self._target_octave || 4;
+      self._stave.drawBeat([{name: self._target_name[0], accidental: self._target_name[1], octave: octave}], 4);
    }
 };
 
