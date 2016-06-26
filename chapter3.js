@@ -1,75 +1,5 @@
 (function(Chapter3) {
 
-Chapter3.Engine = function(quizzer, piano, quizz_widget, timeout, adaptive_timout, allowed_keys) {
-   var self = this;
-   self._quizzer = quizzer;
-   self._piano = piano;
-   self._quizz_widget = quizz_widget;
-   self._timeout = timeout;
-   self._quizzer.restrictKeys(allowed_keys);
-   self._wait_for_round = false;
-   self._adaptive_timeout = adaptive_timout;
-
-   piano.annotation(false);
-};
-
-Chapter3.Engine.prototype.abort = function() {
-   var self = this;
-   self._quizzer.abort();
-};
-
-Chapter3.Engine.prototype.newRound = function() {
-   var self = this;
-   self._quizzer.quizz(self._timeout, +3, -1, -2, function() {
-      var target = self._quizzer.getTarget();
-      self._piano.markKey(target.octave, target.key_index);
-      self._piano.annotation(true);
-      self._quizz_widget.taggleName(target.octave, target.name, target.accidental, true);
-   }, [4,5]); 
-
-   var target = self._quizzer.getTarget();
-   self._quizz_widget.taggleName(target.octave, target.name, target.accidental, false);
-   self._quizz_widget.taggleSymbol(target.ocatve, target.name, target.accidental, true);
-   self._piano.unmarkKeys();
-};
-
-Chapter3.Engine.prototype.onPress = function(octave, note_index) {
-   var self = this;
-   self._piano.pressKey(octave, note_index);
-   if (self._wait_for_round) {
-      return;
-   }
-   var used = self._quizzer.timeUsed();
-   if (self._quizzer.trial(octave, note_index)) {
-      self._wait_for_round = true;
-      Common.feedbackCorrect('keyboard');
-      self._piano.unmarkKeys();
-      if (self._adaptive_timeout) {
-         self._timeout = (used == self._timeout)? self._timeout+500 : Math.floor((used+self._timeout)/2.0);
-      }
-      setTimeout(function() {
-         self._wait_for_round = false;
-         Common.feedbackNone('keyboard');
-         self._piano.annotation(false);
-         self.newRound();
-      }, 1000);
-   } else {
-      Common.feedbackWrong('keyboard');
-   }
-
-};
-
-Chapter3.Engine.prototype.onRelease = function(octave, note_index) {
-   var self = this;
-   self._piano.releaseKey(octave, note_index);
-   if (!self._wait_for_round) {
-      Common.feedbackNone('keyboard');
-   }
-};
-
-
-
-
 
 Chapter3.Stages = function(piano) {
    var self = this;
@@ -135,7 +65,7 @@ Chapter3.Stages.prototype._keys_stage = function(allowed_keys, timeout, adaptive
    self._stave = new Score.Stave("stave", "treble");
    self._quizz_widget = new QuizzWidgets.Boxes(document.getElementById('quizz').querySelector('.note-name'), self._stave);
    self._quizzer = new Quizzer.NotesGame('user-points', 'timer');
-   self._game = new Chapter3.Engine(self._quizzer, self._piano, self._quizz_widget, timeout, adaptive_timeout, allowed_keys);
+   self._game = new Chapter2.Engine(self._quizzer, self._piano, self._quizz_widget, timeout, adaptive_timeout, allowed_keys);
 
    self._piano.setScreen(function(key, info) {self._game.onPress(info, key);},
                          function(key, info) {self._game.onRelease(info, key);});

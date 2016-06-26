@@ -28,4 +28,53 @@ QuizzWidgets.Boxes.prototype.reset = function() {
 
 
 
+
+
+
+QuizzWidgets.SimpleStave = function(stave) {
+   var self = this;
+   self._stave = stave;
+   self.reset();
+};
+
+QuizzWidgets.SimpleStave.prototype.reset = function() {
+   var self = this;
+   self._sequence = self._makeSequence(4).concat(self._makeSequence(5));
+   self._stave.drawSequence(self._sequence);
+};
+
+QuizzWidgets.SimpleStave.prototype.taggleName = function(octave, name, accidental, flag) {
+   var self = this;
+   for (var i = 0; i < self._sequence.length; ++i) {
+      if ((self._sequence[i].notes[0].name == name.toLowerCase()) && (self._sequence[i].notes[0].octave == octave)) {
+         self._sequence[i].annotation = flag ? {text: name, position: 10} : null;
+         break;
+      }
+   }
+   self._stave.drawSequence(self._sequence);
+};
+
+QuizzWidgets.SimpleStave.prototype.taggleSymbol = function(octave, name, accidental, flag) {
+   var self = this;
+   for (var i = 0; i < self._sequence.length; ++i) {
+      if ((self._sequence[i].notes[0].name == name.toLowerCase()) && (self._sequence[i].notes[0].octave == octave)) {
+         self._sequence[i].notes[0].color = flag ? 'blue' : 'black';
+         break;
+      }
+   }
+   self._stave.drawSequence(self._sequence);
+};
+
+QuizzWidgets.SimpleStave.prototype._makeSequence = function(octave) {
+   return [
+            {notes: [{name: 'c', octave: octave}], duration: 4},
+            {notes: [{name: 'd', octave: octave}], duration: 4},
+            {notes: [{name: 'e', octave: octave}], duration: 4},
+            {notes: [{name: 'f', octave: octave}], duration: 4},
+            {notes: [{name: 'g', octave: octave}], duration: 4},
+            {notes: [{name: 'a', octave: octave}], duration: 4},
+            {notes: [{name: 'b', octave: octave}], duration: 4},
+         ];
+};
+ 
 }(window.QuizzWidgets = window.QuizzWidgets || {}));

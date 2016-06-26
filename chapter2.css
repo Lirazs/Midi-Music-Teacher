@@ -4,6 +4,9 @@ octave {
    width: 390px;
 }
 
+#stave {
+   width: 780px;
+}
 
 #keyboard {
    position: absolute;

@@ -1,11 +1,19 @@
 .question-box {
    height: 150px;
-   width: 150px;
    border-radius: 50px;
    border: 5px grey solid;
    box-shadow: rgba(0, 0, 0, 0.7) 5px 10px 10px 4px;
-   line-height: 150px; 
    background-color: white;
+}
+
+.question-box.short {
+   width: 150px; 
+   line-height: 150px; 
+}
+
+.question-box.long {
+   width: 780px; 
+   line-height: 150px; 
 }
 
 .question-box.note-symbol {

@@ -46,6 +46,15 @@ angular.module('keyboard', [])
       self._element.querySelector('.'+self._index2ID[key_index]).classList.remove('pressed');
    };
 
+   Keyboard.Octave.prototype.releaseKeys = function() {
+      var self = this;
+      for (var key_index in self._index2ID) {
+         if (self._index2ID.hasOwnProperty(key_index)) {
+            self.releaseKey(key_index);
+         }
+      }
+   };
+
    Keyboard.Octave.prototype.annotation = function(flag) {
       var self = this;
       var mode = flag? 'visible':'hidden';
@@ -121,6 +130,16 @@ angular.module('keyboard', [])
          return true;
       }
       return false;     
+   };
+
+
+   Keyboard.Range.prototype.releaseKeys = function() {
+      var self = this;
+      for (var octave in self._octaves) {
+         if (self._octaves.hasOwnProperty(octave)) {
+            self._octaves[octave].releaseKeys();
+         }
+      }
    };
 
 

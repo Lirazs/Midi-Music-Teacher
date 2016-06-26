@@ -20,6 +20,8 @@ Chapter1.Engine.prototype.abort = function() {
 
 Chapter1.Engine.prototype.newRound  = function() {
    var self = this;
+   self._quizz_widget.reset();
+   self._octave.releaseKeys();
    self._quizzer.quizz(self._timeout, +3, -1, -2, function() {
       self._octave.annotation(true);
    });
