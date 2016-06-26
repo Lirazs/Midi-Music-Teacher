@@ -122,4 +122,11 @@ Quizzer.NotesGame.prototype.showNote = function() {
    }
 };
 
+Quizzer.NotesGame.prototype.hideKeyname = function() {
+   var self = this;
+   if (self._note_element) {
+      self._note_element.querySelector('span').innerHTML = '?';
+   }
+};
+
 }(window.Quizzer = window.Quizzer  || {}));

@@ -39,7 +39,7 @@ body {
 }
 
 #user-points {
-   font-size: 2em;
+   font-size: 1.5em;
    color: white;
 }
 
@@ -135,7 +135,7 @@ body {
    left: 2%;
    top: 40%;
    transform: translate(-2%, -50%);
-   width: 100px;
+   width: 70px;
 
    border: 2px grey solid;
    box-shadow: rgba(0, 0, 0, 0.7) 5px 10px 10px 4px;
@@ -144,8 +144,8 @@ body {
 
 
 .stage {
-   height: 75px;
-   width: 75px;
+   height: 60px;
+   width: 60px;
 
    position: relative;
    left: 50%;
@@ -160,7 +160,7 @@ body {
    color: black;
    text-align: center;
    font-size: 2em;
-   line-height: 75px; 
+   line-height: 60px; 
 
    cursor: pointer;
 }

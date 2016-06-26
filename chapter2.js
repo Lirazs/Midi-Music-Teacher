@@ -26,6 +26,7 @@ Chapter2.Engine.prototype.newRound = function() {
       self._quizzer.showKeyname();
    }, [4,5]); 
    self._quizzer.showNote();
+   self._quizzer.hideKeyname();
    self._piano.unmarkKeys();
 };
 
