@@ -47,6 +47,19 @@ angular.module('keyboard', [])
       }
    };
 
+   Keyboard.Octave.prototype.setMouse = function(onDown, onUp, information) {
+      var self = this;
+      for (var key_index in self._index2ID) {
+         if (self._index2ID.hasOwnProperty(key_index)) {
+            let keyID = key_index;
+            var key_element = self._element.querySelector('.'+self._index2ID[key_index])
+            key_element.onmousedown = function() {onDown(keyID, information);};
+            key_element.onmouseup = function() {onUp(keyID, information);};
+         }
+      }
+   };
+
+
 
 
    Keyboard.Range = function(element, octaves, $compile, $scope) {

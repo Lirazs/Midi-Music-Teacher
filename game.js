@@ -30,7 +30,7 @@ Game.Chapter1.prototype.newRound  = function() {
 Game.Chapter1.prototype.onPress = function(octave, note_index) {
    var self = this;
    self._octave.pressKey(note_index);
-   if (self._quizzer.trial(note_index)) {
+   if (self._quizzer.trial(octave, note_index)) {
       setTimeout(function() { 
          self._octave.annotation(false);
          self.newRound();
@@ -112,6 +112,9 @@ Game.Stages.prototype._keys_stage = function(allowed_keys) {
    self._octave = new Keyboard.Octave(document.getElementById('octave'));
    self._quizzer = new Quizzer.NotesGame('user-points', 'timer', 'asked-note-name', self._stave);
    self._game = new Game.Chapter1(self._quizzer, self._octave, 5000, allowed_keys);
+
+   self._octave.setMouse(function(key, info) {self._game.onPress(info, key);},
+                         function(key, info) {self._game.onRelease(info, key);}, 0);
 
    if (!self._init_midi()) {
       self._game.newRound();
