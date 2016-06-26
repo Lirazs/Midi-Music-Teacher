@@ -47,14 +47,16 @@ angular.module('keyboard', [])
       }
    };
 
-   Keyboard.Octave.prototype.setMouse = function(onDown, onUp, information) {
+   Keyboard.Octave.prototype.setScreen = function(onPress, onRelease, information) {
       var self = this;
       for (var key_index in self._index2ID) {
          if (self._index2ID.hasOwnProperty(key_index)) {
             let keyID = key_index;
             var key_element = self._element.querySelector('.'+self._index2ID[key_index])
-            key_element.onmousedown = function() {onDown(keyID, information);};
-            key_element.onmouseup = function() {onUp(keyID, information);};
+            key_element.onmousedown = function(e) {onPress(keyID, information);};
+            key_element.onmouseup = function(e) {onRelease(keyID, information);};
+            key_element.ontouchstart = function(e) {e.preventDefault(); onPress(keyID, information);};
+            key_element.ontouchend = function(e) {e.preventDefault(); onRelease(keyID, information);};
          }
       }
    };
