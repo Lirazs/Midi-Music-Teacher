@@ -75,22 +75,20 @@ Quizzer.NotesGame.prototype.quizz = function(millisecs, correct_score, mistake_s
    );
 };
 
-Quizzer.NotesGame.prototype.trial = function(octave, note) {
+Quizzer.NotesGame.prototype.trial = function(octave, key_index) {
    var self = this;
-   if (self._target_note == note) {
-      if (self._target_octave == null) {
-         self._timer.abort();
-         self._set_score(self._points+self._correct_score);
-         return true;
-      } else if (self._target_octave == octave) {
-         self._timer.abort();
-         self._set_score(self._points+self._correct_score);
-         return true;
-      } else {
-         self._set_score(self._points+self._mistake_score);
-         return false;
-      }
+   var correct = false;
+   if (self._target_key == key_index) {
+      correct = ((self._target_octave == null) || (self._target_octave == octave));
    }
+
+   if (correct === true) {
+      self._timer.abort();
+       self._set_score(self._points+self._correct_score);
+   } else {
+      self._set_score(self._points+self._mistake_score);
+   }
+   return correct;
 }
 
 Quizzer.NotesGame.prototype._set_score = function(score) {
