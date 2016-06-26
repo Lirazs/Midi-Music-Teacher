@@ -10,6 +10,7 @@ Game.Chapter1 = function(quizzer, octave, timeout, allowed_keys) {
    self._octave = octave;
    self._timeout = timeout;
    self._quizzer.restrictKeys(allowed_keys);
+   self._wait_for_round = false;
 
    octave.annotation(false);
 };
@@ -30,18 +31,51 @@ Game.Chapter1.prototype.newRound  = function() {
 Game.Chapter1.prototype.onPress = function(octave, note_index) {
    var self = this;
    self._octave.pressKey(note_index);
+   if (self._wait_for_round) {
+      return;
+   }
    if (self._quizzer.trial(octave, note_index)) {
-      setTimeout(function() { 
+      self._feedbackCorrect();
+      self._wait_for_round = true;
+      setTimeout(function() {
+         self._wait_for_round = false;
+         self._feedbackNone();
          self._octave.annotation(false);
          self.newRound();
       }, 1000);
-   }  
+   } else {
+      self._feedbackWrong();
+   }
 };
 
 Game.Chapter1.prototype.onRelease = function(octave, note_index) {
    var self = this;
+   if (!self._wait_for_round) {
+      self._feedbackNone();
+   }
    self._octave.releaseKey(note_index);
 };
+
+
+
+Game.Chapter1.prototype._feedbackCorrect = function() {
+   document.getElementById('keyboard').querySelector('.feedback').classList.remove('none');
+   document.getElementById('keyboard').querySelector('.feedback').classList.remove('wrong');
+   document.getElementById('keyboard').querySelector('.feedback').classList.add('correct');
+};
+
+Game.Chapter1.prototype._feedbackWrong = function() {
+   document.getElementById('keyboard').querySelector('.feedback').classList.remove('none');
+   document.getElementById('keyboard').querySelector('.feedback').classList.remove('correct');
+   document.getElementById('keyboard').querySelector('.feedback').classList.add('wrong');
+};
+
+Game.Chapter1.prototype._feedbackNone = function() { 
+   document.getElementById('keyboard').querySelector('.feedback').classList.remove('wrong');
+   document.getElementById('keyboard').querySelector('.feedback').classList.remove('correct');
+   document.getElementById('keyboard').querySelector('.feedback').classList.add('none');
+};
+
 
 
 
@@ -105,8 +139,8 @@ Game.Stages.prototype._keys_stage = function(allowed_keys) {
 
    self.abort();
 
-   document.getElementById('asked-note-symbol').querySelector('canvas').style.display = 'none';
-   document.getElementById('asked-note-symbol').querySelector('span').style.display = 'inline-block';
+   document.getElementById('asked-note-symbol').querySelector('canvas').style.display = 'inline-block';
+   document.getElementById('asked-note-symbol').querySelector('span').style.display = 'none';
 
    self._stave = new Score.Stave("stave", "treble");
    self._octave = new Keyboard.Octave(document.getElementById('octave'));

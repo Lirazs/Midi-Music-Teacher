@@ -67,6 +67,36 @@ body {
    background-color: grey;
 }
 
+#keyboard > .feedback {
+   position: absolute;
+   width: 102%;
+   height: 102%;
+   top: -1%;
+   left: -1%;
+}
+
+#keyboard > .feedback.none {
+   opacity: 1;
+}
+
+#keyboard > .feedback.correct {
+   opacity: 0;
+   box-shadow: #89FF00 0px 0px 15px 4px;
+   transition: opacity .75s ease-in-out;
+   -moz-transition: opacity .75s ease-in-out;
+   -webkit-transition: opacity .75s ease-in-out;
+}
+
+#keyboard > .feedback.wrong {
+   opacity: 0;
+   box-shadow: #FF1200 0px 0px 15px 6px;
+   transition: opacity .75s ease-in-out;
+   -moz-transition: opacity .75s ease-in-out;
+   -webkit-transition: opacity .75s ease-in-out;
+}
+
+
+
 #midi-devices {
    width: 500px;
 
