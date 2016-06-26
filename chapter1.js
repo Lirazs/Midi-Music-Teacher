@@ -1,9 +1,10 @@
 (function(Chapter1) {
 
-Chapter1.Engine = function(quizzer, octave, timeout, adaptive_timout, allowed_keys) {
+Chapter1.Engine = function(quizzer, octave, quizz_widget, timeout, adaptive_timout, allowed_keys) {
    var self = this;
    self._quizzer = quizzer;
    self._octave = octave;
+   self._quizz_widget = quizz_widget;
    self._timeout = timeout;
    self._quizzer.restrictKeys(allowed_keys);
    self._wait_for_round = false;
@@ -22,8 +23,10 @@ Chapter1.Engine.prototype.newRound  = function() {
    self._quizzer.quizz(self._timeout, +3, -1, -2, function() {
       self._octave.annotation(true);
    });
-   self._quizzer.showNote();
-   self._quizzer.showKeyname();
+
+   var target = self._quizzer.getTarget();
+   self._quizz_widget.taggleName(4, target.name, target.accidental, true);
+   self._quizz_widget.taggleSymbol(4, target.name, target.accidental, true);
 };
 
 
@@ -65,6 +68,7 @@ Chapter1.Stages = function() {
    var self = this;
    self._stave = null;
    self._octave = null;
+   self._quizz_widget = null;
    self._quizzer = null;
    self._game = null;
    self._midi = null;
@@ -113,6 +117,7 @@ Chapter1.Stages.prototype.abort = function() {
    self._stave = null;
    self._octave = null;
    self._quizzer = null;
+   self._quizz_widget = null;
    self._game = null;
 };
 
@@ -121,13 +126,11 @@ Chapter1.Stages.prototype._keys_stage = function(allowed_keys, timeout, adaptive
 
    self.abort();
 
-   document.getElementById('asked-note-symbol').querySelector('canvas').style.display = 'inline-block';
-   document.getElementById('asked-note-symbol').querySelector('span').style.display = 'none';
-
    self._stave = new Score.Stave("stave", "treble");
    self._octave = new Keyboard.Octave(document.getElementById('octave'));
-   self._quizzer = new Quizzer.NotesGame('user-points', 'timer', 'asked-note-name', self._stave);
-   self._game = new Chapter1.Engine(self._quizzer, self._octave, timeout, adaptive_timeout, allowed_keys);
+   self._quizz_widget = new QuizzWidgets.Boxes(document.getElementById('quizz').querySelector('.note-name'), self._stave);
+   self._quizzer = new Quizzer.NotesGame('user-points', 'timer');
+   self._game = new Chapter1.Engine(self._quizzer, self._octave, self._quizz_widget, timeout, adaptive_timeout, allowed_keys);
 
    self._octave.setScreen(function(key, info) {self._game.onPress(info, key);},
                          function(key, info) {self._game.onRelease(info, key);}, 0);

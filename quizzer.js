@@ -12,14 +12,12 @@ Quizzer.randomInt = function(min, max) {
 
 
 
-Quizzer.NotesGame = function(score_id, timer_id, keyname_id, stave) {
+Quizzer.NotesGame = function(score_id, timer_id) {
    var self = this;
    self._timer = null;
    self._timer_id = timer_id;
    self._given_time = 0;
    self._score_element = document.getElementById(score_id);
-   self._stave = stave;
-   self._note_element = keyname_id? document.getElementById(keyname_id) : null;
    self._points = 0;
    self._correct_score = 0;
    self._mistake_score = 0;
@@ -104,29 +102,8 @@ Quizzer.NotesGame.prototype._set_score = function(score) {
 
 Quizzer.NotesGame.prototype.getTarget = function() {
    var self = this;
-   return {key_index: self._target_key, octave: self._target_octave};
-};
-
-Quizzer.NotesGame.prototype.showKeyname = function() {
-   var self = this;
-   if (self._note_element) {
-      self._note_element.querySelector('span').innerHTML = self._target_name[0]+self._target_name[1];
-   }
-};
-
-Quizzer.NotesGame.prototype.showNote = function() {
-   var self = this;
-   if (self._stave) {
-      var octave = self._target_octave || 4;
-      self._stave.drawBeat([{name: self._target_name[0], accidental: self._target_name[1], octave: octave}], 4);
-   }
-};
-
-Quizzer.NotesGame.prototype.hideKeyname = function() {
-   var self = this;
-   if (self._note_element) {
-      self._note_element.querySelector('span').innerHTML = '?';
-   }
+   return {key_index: self._target_key, name: self._target_name[0],
+           accidental: self._target_name[1], octave: self._target_octave};
 };
 
 }(window.Quizzer = window.Quizzer  || {}));

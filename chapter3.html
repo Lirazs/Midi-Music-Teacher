@@ -1,7 +1,7 @@
 <html>
 
 <head>
-   <title>Chapter 2</title>
+   <title>Chapter 3</title>
    <link rel="icon" href="data:;base64,iVBORw0KGgo="/>
 
    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
@@ -25,12 +25,12 @@
    <script src="score.js"></script>
 
 
-   <script src="chapter2.js"></script>
-   <link rel="stylesheet" type="text/css" href="chapter2.css"/>
+   <script src="chapter3.js"></script>
+   <link rel="stylesheet" type="text/css" href="chapter3.css"/>
    <script>
 
       var piano = null;
-      var app = angular.module('Chapter2', ['keyboard']);
+      var app = angular.module('Chapter3', ['keyboard']);
       app.controller('gameCtrl', function($scope, $http, $compile) {
          $scope.init = function() {
             piano = new Keyboard.Range(document.getElementById('keyboard'), [4, 5], $compile, $scope);
@@ -41,19 +41,19 @@
       var game = null;
 
       var stage1 = function() {
-         if (game == null) { game = new Chapter2.Stages(piano); }
+         if (game == null) { game = new Chapter3.Stages(piano); }
          game.stage1();
       };
       var stage2 = function() {
-         if (game == null) { game = new Chapter2.Stages(piano); }
+         if (game == null) { game = new Chapter3.Stages(piano); }
          game.stage2();
       };
       var stage3 = function() {
-         if (game == null) { game = new Chapter2.Stages(piano); }
+         if (game == null) { game = new Chapter3.Stages(piano); }
          game.stage3();
       };
       var stage4 = function() {
-         if (game == null) { game = new Chapter2.Stages(piano); }
+         if (game == null) { game = new Chapter3.Stages(piano); }
          game.stage4();
       };
 
@@ -67,7 +67,7 @@
 </head>
 
 
-<body data-ng-app='Chapter2'> 
+<body data-ng-app='Chapter3'> 
    <div data-ng-controller='gameCtrl' data-ng-init='init();'>
       <div id="user-points">
          <span>Score: 0</span>
@@ -90,7 +90,8 @@
          </div>
       </div>
 
-     <div id='keyboard'>
+
+      <div id='keyboard'>
          <div class='feedback none'></div>
       </div>
 

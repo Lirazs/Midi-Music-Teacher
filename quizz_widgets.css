@@ -1,0 +1,32 @@
+.question-box {
+   height: 150px;
+   width: 150px;
+   border-radius: 50px;
+   border: 5px grey solid;
+   box-shadow: rgba(0, 0, 0, 0.7) 5px 10px 10px 4px;
+   line-height: 150px; 
+   background-color: white;
+}
+
+.question-box.note-symbol {
+   position: absolute;
+   left: 80%;
+   transform: translate(-100%, 0);
+}
+
+.question-box.note-name {
+   position: absolute;
+   left: 20%;
+}
+
+.question-box > span  {
+   color: black;
+   font-size: 3em;
+   text-align: center;
+   display: inline-block;
+   width: 100%;
+   font-family: "Times New Roman", Times, serif;
+   text-shadow: 2px 2px 8px #1144AA;
+}
+
+
