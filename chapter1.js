@@ -1,12 +1,12 @@
 (function(Chapter1) {
 
-Chapter1.Engine = function(quizzer, octave, quizz_widget, timeout, adaptive_timout, allowed_keys) {
+Chapter1.Engine = function(quizzer, octave, quizz_widget, timeout, adaptive_timout, allowed_notes) {
    var self = this;
    self._quizzer = quizzer;
    self._octave = octave;
    self._quizz_widget = quizz_widget;
    self._timeout = timeout;
-   self._quizzer.restrictKeys(allowed_keys);
+   self._quizzer.restrictNotes(allowed_notes);
    self._wait_for_round = false;
    self._adaptive_timeout = adaptive_timout;
 
@@ -123,7 +123,7 @@ Chapter1.Stages.prototype.abort = function() {
    self._game = null;
 };
 
-Chapter1.Stages.prototype._keys_stage = function(allowed_keys, timeout, adaptive_timeout) {
+Chapter1.Stages.prototype._keys_stage = function(allowed_notes, timeout, adaptive_timeout) {
    var self = this;
 
    self.abort();
@@ -132,7 +132,7 @@ Chapter1.Stages.prototype._keys_stage = function(allowed_keys, timeout, adaptive
    self._octave = new Keyboard.Octave(document.getElementById('octave'));
    self._quizz_widget = new QuizzWidgets.Boxes(document.getElementById('quizz').querySelector('.note-name'), self._stave);
    self._quizzer = new Quizzer.NotesGame('user-points', 'timer');
-   self._game = new Chapter1.Engine(self._quizzer, self._octave, self._quizz_widget, timeout, adaptive_timeout, allowed_keys);
+   self._game = new Chapter1.Engine(self._quizzer, self._octave, self._quizz_widget, timeout, adaptive_timeout, allowed_notes);
 
    self._octave.setScreen(function(key, info) {self._game.onPress(info, key);},
                          function(key, info) {self._game.onRelease(info, key);}, 0);
@@ -146,17 +146,17 @@ Chapter1.Stages.prototype._keys_stage = function(allowed_keys, timeout, adaptive
 
 Chapter1.Stages.prototype.stage1 = function() {
    var self = this;
-   self._keys_stage([0,2,4,5,7,9,11], 5000, false);
+   self._keys_stage([{keys: [0,2,4,5,7,9,11], octaves: null}], 5000, false);
 };
 
 Chapter1.Stages.prototype.stage2 = function() {
    var self = this;
-   self._keys_stage([0,1,2,3,4,5,6,7,8,9,10,11], 5000, false);
+   self._keys_stage([{keys: [0,1,2,3,4,5,6,7,8,9,10,11], octaves: null}], 5000, false);
 };
 
 Chapter1.Stages.prototype.stage3 = function() {
    var self = this;
-   self._keys_stage([0,1,2,3,4,5,6,7,8,9,10,11], 5000, true);
+   self._keys_stage([{keys: [0,1,2,3,4,5,6,7,8,9,10,11], octaves: null}], 5000, true);
 };
 
 }(window.Chapter1 = window.Chapter1|| {}));

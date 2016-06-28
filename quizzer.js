@@ -10,6 +10,25 @@ Quizzer.randomInt = function(min, max) {
    return Math.floor(Math.random() * (max - min)) + min;
 }
 
+Quizzer.randomNote = function(allowed_notes) {
+   var target_octave = null;
+   var target_key = null;
+   var target_name = null;
+
+   if (allowed_notes.octaves != null) {
+      target_octave = allowed_notes.octaves[Quizzer.randomInt(0, allowed_notes.octaves.length)];
+   }
+
+   if (allowed_notes.keys == null) {
+      target_key = Quizzer.randomInt(0,12);
+   } else {
+      target_key = allowed_notes.keys[Quizzer.randomInt(0, allowed_notes.keys.length)];
+   }
+
+   target_name = Quizzer.keys[target_key][Quizzer.randomInt(0, Quizzer.keys[target_key].length)];
+
+   return {key: target_key, octave: target_octave, name: target_name};
+};
 
 
 Quizzer.NotesGame = function(score_id, timer_id) {
@@ -23,13 +42,13 @@ Quizzer.NotesGame = function(score_id, timer_id) {
    self._mistake_score = 0;
    self._target_key = null;
    self._target_name = '';
-   self._allowed_keys = null;
    self._target_octave = null;
+   self._allowed_notes = [{keys: null, octaves: null}];
 };
 
-Quizzer.NotesGame.prototype.restrictKeys = function(allowed_keys) {
+Quizzer.NotesGame.prototype.restrictNotes = function(allowed_notes) {
    var self = this;
-   self._allowed_keys = allowed_keys;
+   self._allowed_notes = allowed_notes;
 };
 
 Quizzer.NotesGame.prototype.abort = function() {
@@ -45,24 +64,16 @@ Quizzer.NotesGame.prototype.timeUsed = function() {
    return self._given_time - self._timer.remaining();
 };
 
-Quizzer.NotesGame.prototype.quizz = function(millisecs, correct_score, mistake_score, timeout_score, onTimeout, octaves_list) {
+Quizzer.NotesGame.prototype.quizz = function(millisecs, correct_score, mistake_score, timeout_score, onTimeout) {
    var self = this;
    self._correct_score = correct_score;
    self._mistake_score = mistake_score;
    self._given_time = millisecs;
 
-   if (octaves_list) {
-      self._target_octave = octaves_list[Quizzer.randomInt(0, octaves_list.length)];
-   } else {
-      self._target_octave = null;
-   }
-
-   if (self._allowed_keys == null) {
-      self._target_key = Quizzer.randomInt(0,12);
-   } else {
-      self._target_key = self._allowed_keys[Quizzer.randomInt(0, self._allowed_keys.length)];
-   }
-   self._target_name = Quizzer.keys[self._target_key][Quizzer.randomInt(0, Quizzer.keys[self._target_key].length)];
+   var note = Quizzer.randomNote(self._allowed_notes[Quizzer.randomInt(0,self._allowed_notes.length)]);
+   self._target_name = note.name;
+   self._target_key = note.key;
+   self._target_octave = note.octave;
 
    self._timer = new Widgets.CountDown(millisecs, 50,
       function() {

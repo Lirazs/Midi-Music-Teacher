@@ -1,15 +1,15 @@
 (function(Chapter2) {
 
-Chapter2.Engine = function(quizzer, piano, quizz_widget, timeout, adaptive_timout, allowed_keys) {
+Chapter2.Engine = function(quizzer, piano, quizz_widget, timeout, adaptive_timout, allowed_notes) {
    var self = this;
    self._quizzer = quizzer;
    self._piano = piano;
    self._quizz_widget = quizz_widget;
    self._timeout = timeout;
-   self._quizzer.restrictKeys(allowed_keys);
+   self._quizzer.restrictNotes(allowed_notes);
    self._wait_for_round = false;
    self._adaptive_timeout = adaptive_timout;
-   self._allowed_keys = allowed_keys;
+   self._allowed_notes = allowed_notes;
 
    piano.annotation(false);
 };
@@ -22,9 +22,12 @@ Chapter2.Engine.prototype.abort = function() {
 Chapter2.Engine.prototype.start = function() {
    var self = this;
    self._piano.unmarkKeys();
-   self._allowed_keys.forEach(function (key) {
-      self._piano.markKey(4, key);
-      self._piano.markKey(5, key);
+   self._allowed_notes.forEach(function (allowed) {
+      for (var i = 0; i < allowed.octaves.length; ++i) {
+         for (var j = 0; j < allowed.keys.length; ++j) {
+            self._piano.markKey(allowed.octaves[i], allowed.keys[j]);
+         }
+      }
    });
    self._piano.annotation(true);
    setTimeout(function() { 
@@ -42,7 +45,7 @@ Chapter2.Engine.prototype.newRound = function() {
       self._piano.markKey(target.octave, target.key_index);
       self._piano.annotation(true);
       self._quizz_widget.taggleName(target.octave, target.name, target.accidental, true);
-   }, [4,5]); 
+   }); 
 
    var target = self._quizzer.getTarget();
    self._quizz_widget.taggleName(target.octave, target.name, target.accidental, false);
@@ -145,7 +148,7 @@ Chapter2.Stages.prototype.abort = function() {
    self._game = null;
 };
 
-Chapter2.Stages.prototype._keys_stage = function(allowed_keys, timeout, adaptive_timeout) {
+Chapter2.Stages.prototype._keys_stage = function(allowed_notes, timeout, adaptive_timeout) {
    var self = this;
 
    self.abort();
@@ -154,7 +157,7 @@ Chapter2.Stages.prototype._keys_stage = function(allowed_keys, timeout, adaptive
    self._quizz_widget = new QuizzWidgets.SimpleStave(self._stave);
    self._quizzer = new Quizzer.NotesGame('user-points', 'timer');
 
-   self._game = new Chapter2.Engine(self._quizzer, self._piano, self._quizz_widget, timeout, adaptive_timeout, allowed_keys);
+   self._game = new Chapter2.Engine(self._quizzer, self._piano, self._quizz_widget, timeout, adaptive_timeout, allowed_notes);
 
    self._piano.setScreen(function(key, info) {self._game.onPress(info, key);},
                          function(key, info) {self._game.onRelease(info, key);});
@@ -167,22 +170,22 @@ Chapter2.Stages.prototype._keys_stage = function(allowed_keys, timeout, adaptive
 
 Chapter2.Stages.prototype.stage1 = function() {
    var self = this;
-   self._keys_stage([0,5], 5000, false);
+   self._keys_stage([{octaves: [4,5], keys: [0,5]}], 5000, false);
 };
 
 Chapter2.Stages.prototype.stage2 = function() {
    var self = this;
-   self._keys_stage([0,5,11], 5000, false);
+   self._keys_stage([{octaves: [4,5], keys: [0,5,11]}], 5000, false);
 };
 
 Chapter2.Stages.prototype.stage3 = function() {
    var self = this;
-   self._keys_stage([0,2,4,5,7,9,11], 5000, false);
+   self._keys_stage([{octaves: [4,5], keys: [0,2,4,5,7,9,11]}], 5000, false);
 };
 
 Chapter2.Stages.prototype.stage4 = function() {
    var self = this;
-   self._keys_stage([0,2,4,5,7,9,11], 5000, true);
+   self._keys_stage([{octaves: [4,5], keys: [0,2,4,5,7,9,11]}], 5000, true);
 };
 
 
