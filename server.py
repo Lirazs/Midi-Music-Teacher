@@ -8,12 +8,13 @@ import urlparse
 
 class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     homedir = ''
-    known_content = {   '.htm':   'html',   '.html':  'html', 
-                        '.css':   'css',    '.js':    'javascript'  }
+    known_content = {   '.htm':   'text/html',   '.html':  'text/html', 
+                        '.css':   'text/css',    '.js':    'text/javascript',
+                        '.mid': 'audio/midi'}
 
     def _set_headers(self, content_type):
         self.send_response(200)
-        self.send_header('Content-type', 'text/'+content_type)
+        self.send_header('Content-type', ''+content_type)
         self.end_headers()
 
     def do_HEAD(self):
@@ -25,7 +26,7 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         if fext in MyHandler.known_content:
             self._set_headers(MyHandler.known_content[fext])
             try:
-                with open(unicode(os.path.join(MyHandler.homedir, os.path.basename(path))), "r") as f:
+                with open(unicode(os.path.join(MyHandler.homedir, os.path.basename(path))), "rb") as f:
                     self.wfile.write(f.read())
             except:
                 pass
