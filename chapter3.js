@@ -27,7 +27,7 @@ Chapter3.Stages.prototype._init_midi = function() {
          }
          Common.initDeviceList(devices, document.getElementById('devices-list'));
          if (self._game) {
-            self._game.newRound();
+            self._game.start();
          }
       },
       function(octave, note_index) {
@@ -71,7 +71,7 @@ Chapter3.Stages.prototype._keys_stage = function(allowed_notes, timeout, adaptiv
                          function(key, info) {self._game.onRelease(info, key);});
 
    if (!self._init_midi()) {
-      self._game.newRound();
+      self._game.start();
    }
 };
 
@@ -79,20 +79,25 @@ Chapter3.Stages.prototype._keys_stage = function(allowed_notes, timeout, adaptiv
 
 Chapter3.Stages.prototype.stage1 = function() {
    var self = this;
-   self._keys_stage([{octaves: [4,5], keys: [0,4,7,9]}], 5000, false);
+   self._keys_stage([{octaves: [4], keys: [2,5,9]}], 5000, false);
 };
 
 Chapter3.Stages.prototype.stage2 = function() {
    var self = this;
-   self._keys_stage([{octaves: [4,5], keys: [0,2,4,5,7,9,11]}], 5000, false);
+   self._keys_stage([{octaves: [4], keys: [2,5,9]}, {octaves: [5], keys: [0,4,7,11]}], 5000, false);
 };
 
 Chapter3.Stages.prototype.stage3 = function() {
    var self = this;
-   self._keys_stage([{octaves: [4,5], keys: [0,1,2,3,4,5,6,7,8,9,10,11]}], 5000, false);
+   self._keys_stage([{octaves: [4,5], keys: [0,2,4,5,7,9,11]}], 5000, false);
 };
 
 Chapter3.Stages.prototype.stage4 = function() {
+   var self = this;
+   self._keys_stage([{octaves: [4,5], keys: [0,1,2,3,4,5,6,7,8,9,10,11]}], 5000, false);
+};
+
+Chapter3.Stages.prototype.stage5 = function() {
    var self = this;
    self._keys_stage([{octaves: [4,5], keys: [0,1,2,3,4,5,6,7,8,9,10,11]}], 5000, true);
 };

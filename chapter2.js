@@ -170,12 +170,12 @@ Chapter2.Stages.prototype._keys_stage = function(allowed_notes, timeout, adaptiv
 
 Chapter2.Stages.prototype.stage1 = function() {
    var self = this;
-   self._keys_stage([{octaves: [4,5], keys: [0,5]}], 5000, false);
+   self._keys_stage([{octaves: [4], keys: [2,5,9]}], 5000, false);
 };
 
 Chapter2.Stages.prototype.stage2 = function() {
    var self = this;
-   self._keys_stage([{octaves: [4,5], keys: [0,5,11]}], 5000, false);
+   self._keys_stage([{octaves: [4], keys: [2,5,9]}, {octaves: [5], keys: [0,4,7,11]}], 5000, false);
 };
 
 Chapter2.Stages.prototype.stage3 = function() {

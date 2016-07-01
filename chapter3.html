@@ -57,6 +57,11 @@
          if (game == null) { game = new Chapter3.Stages(piano); }
          game.stage4();
       };
+      var stage5 = function() {
+         if (game == null) { game = new Chapter3.Stages(piano); }
+         game.stage5();
+      };
+
 
 
 
@@ -101,6 +106,7 @@
          <div class='stage' onclick='stage2();'>2</div>
          <div class='stage' onclick='stage3();'>3</div>
          <div class='stage' onclick='stage4();'>4</div>
+         <div class='stage' onclick='stage5();'>5</div>
       </div>
 
       <div id='midi-devices'>
