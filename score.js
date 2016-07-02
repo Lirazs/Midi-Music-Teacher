@@ -50,13 +50,15 @@ Score._makeStave = function(ctx, clef_name, y_position, width, time_signature, k
 };
 
 
-Score._makeBeat = function(clef_name, notes, duration) {
+Score._makeBeat = function(clef_name, notes, duration, rest) {
    var keys = [];
    notes.forEach(function (note_info) {
       keys.push(note_info.name+"/"+(note_info.octave || '4'));
    });
    
-   var stave_note = new Vex.Flow.StaveNote({ keys: keys, duration: duration.toString(), clef: clef_name, auto_stem: true });
+   var stave_note = new Vex.Flow.StaveNote({ keys: keys,
+                                             duration: duration.toString() + (rest? 'r' : ''),
+                                             clef: clef_name, auto_stem: true });
 
    for (var i = 0; i < notes.length; ++i) {
       if (notes[i].accidental) {
@@ -84,7 +86,7 @@ Score._makeSequence = function(clef_name, ctx, beats) {
    var text_notes = [];
    var total_duration = 0;
    beats.forEach(function (beat_info) {
-      stave_notes.push(Score._makeBeat(clef_name, beat_info.notes, beat_info.duration));
+      stave_notes.push(Score._makeBeat(clef_name, beat_info.notes, beat_info.duration, beat_info.rest));
       text_notes.push(Score._beatAnnotation(ctx, beat_info.duration, beat_info.annotation));
       total_duration += 32/beat_info.duration;
    });
@@ -128,11 +130,11 @@ Score.Stave.prototype.clear = function() {
 };
 
 
-Score.Stave.prototype.drawBeat = function(notes, duration, annotation) {
+Score.Stave.prototype.drawBeat = function(notes, duration, annotation, rest) {
    var self = this;
 
    var voice_notes = new Vex.Flow.Voice({ num_beats: 1, beat_value: duration, resolution: Vex.Flow.RESOLUTION });
-   voice_notes.addTickables([Score._makeBeat(self._clef_name, notes, duration)]);
+   voice_notes.addTickables([Score._makeBeat(self._clef_name, notes, duration, rest)]);
 
    var text_notes = new Vex.Flow.Voice({ num_beats: 1, beat_value: duration, resolution: Vex.Flow.RESOLUTION });
    text_notes.addTickables([Score._beatAnnotation(self._ctx, duration, annotation)]);
