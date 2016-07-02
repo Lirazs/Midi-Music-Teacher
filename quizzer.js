@@ -129,6 +129,11 @@ Quizzer.NotesGame.prototype.getTarget = function() {
 Quizzer.SimpleSeqeunce = function(stave) {
    var self = this;
    self._stave = stave;
+   self.reset();
+};
+
+Quizzer.SimpleSeqeunce.prototype.reset = function() {
+   var self = this;
    self._treble_sequence = [];
    self._bass_sequence = [];
    self._next = -1;

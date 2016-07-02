@@ -1,0 +1,156 @@
+<html>
+
+<head>
+   <title>Sequences Draft</title>
+   <link rel="icon" href="data:;base64,iVBORw0KGgo="/>
+
+
+   <script src="common.js"></script>
+   <link rel="stylesheet" type="text/css" href="common.css"/>
+
+   <script src="vexflow-min.js"></script>
+   <script src="score.js"></script>
+   
+   <script src="quizzer.js"></script>
+
+
+   <script src="midi_devices.js"></script>
+
+   <script>
+      var restSeq = function(seq) {
+         var sequence = [];
+         seq.forEach(function(beat) {
+            sequence.push({notes: [{name: 'c', octave: 3}], duration: beat.duration, rest: true});
+         });
+         return sequence;
+      };
+
+      var makeSeq = function(octave, text_position) {
+         var sequence = [
+                           {notes: [{name: 'c', octave: octave}], duration: 4, annotation: {text: 'C', position: text_position}},
+                           {notes: [{name: 'c', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'C#', position: text_position}},
+                           {notes: [{name: 'd', octave: octave}, {name: 'f', octave: 5}], duration: 4, annotation: {text: 'D', position: text_position}},
+                           {notes: [{name: 'd', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'D#', position: text_position}},
+                           {notes: [{name: 'e', octave: octave}], duration: 4, annotation: {text: 'E', position: text_position}},
+                           {notes: [{name: 'f', octave: octave}], duration: 4, annotation: {text: 'F', position: text_position}},
+                           {notes: [{name: 'f', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'F#', position: text_position}},
+                           {notes: [{name: 'g', octave: octave}], duration: 4, annotation: {text: 'G', position: text_position}},
+                           {notes: [{name: 'g', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'G#', position: text_position}},
+                           {notes: [{name: 'a', octave: octave}], duration: 4, annotation: {text: 'A', position: text_position}},
+                           {notes: [{name: 'a', octave: octave, accidental: '#'}], duration: 4, annotation: {text: 'A#', position: text_position}},
+                           {notes: [{name: 'b', octave: octave}], duration: 4, annotation: {text: 'B', position: text_position}},
+                        ];
+         return sequence;
+      };
+
+      var makeRand = function(octave, n) {
+         var sequence = [];
+         for (var i = 0; i < n; ++i) {
+            var note = Quizzer.randomNote({octaves:null, keys:null});
+            sequence.push({notes: [{name: note.name[0], octave: octave, accidental: note.name[1]}], duration: 4});
+         }
+         return sequence;
+      };
+
+
+      var stave = null;
+      var quizz = null;
+
+ 
+      var seq1 = function() {
+         var seq = makeSeq(4, 10);
+         quizz.reset();
+         quizz.setSequence(seq, restSeq(seq), 0);
+      };
+
+      var seq2 = function() {
+         var seq = makeRand(4, 10);
+         quizz.reset();
+         quizz.setSequence(seq, restSeq(seq), 0);
+      };
+
+      window.onload = function() {
+         stave = new Score.GreatStave("stave", null, "C");
+         quizz = new Quizzer.SimpleSeqeunce(stave);
+      };
+
+      var midi = new Midi.Controller(
+         function(ok_flag, devices, msg) {
+            if (!ok_flag) {
+               alert('Midi is unsupported by the browser: ' + msg);
+               return;
+            }
+            Common.initDeviceList(devices, document.getElementById('devices-list'));
+         },
+         function(octave, note_index) {
+            quizz.onPress(octave, note_index);
+         },
+         function(octave, note_index) {
+            quizz.onRelease(octave, note_index);
+         }
+      );
+
+     
+   </script>
+
+
+
+   <style>
+      #stave {
+         height: 250px;
+         width: 780px; 
+         border-radius: 50px;
+         border: 5px grey solid;
+         box-shadow: rgba(0, 0, 0, 0.7) 5px 10px 10px 4px;
+         background-color: white;
+      }
+
+      #options {
+         margin-top: 20px;
+         width: 780px;
+         height: 210px;
+
+         background-color: rgba(200,200,200,0.2);
+         border: 2px grey solid;
+         box-shadow: rgba(0, 0, 0, 0.7) 5px 10px 10px 4px;
+         border-radius: 10%;
+      }
+
+      .option {
+         height: 60px;
+         width: 60px;
+
+         display: inline-block;
+         margin: 10px 10px 7px 10px;
+         border-radius: 50%;
+         border: 2px solid black;
+         box-shadow: rgba(0, 0, 0, 0.7) 1px 2px 2px 1px;
+         background-color: rgba(100, 60, 200, 1);
+
+         color: white;
+         text-align: center;
+         font-size: 1em;
+         line-height: 60px; 
+
+         cursor: pointer;
+      };
+   </style>
+
+</head>
+
+<body> 
+   <div id='quizz'>
+      <canvas id='stave' class='question-box long' width='780' height='250'></canvas>
+
+      <div id='options'>
+         <div class='option' onclick='seq1();'>1</div>
+         <div class='option' onclick='seq2();'>2</div>
+      </div>
+   </div>
+
+   <div id='midi-devices'>
+      <ul id='devices-list' class='devices'></ul>
+   </div>
+</body>
+
+</html>
